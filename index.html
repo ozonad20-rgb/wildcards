@@ -564,7 +564,7 @@ body.rol-aberta .pagina { padding-bottom: calc(min(58vh, 560px) + 60px); }
 .aviso ul { margin: 6px 0; }
 
 /* ---------- combate ---------- */
-.cb-layout { display: grid; grid-template-columns: minmax(300px, 380px) 1fr; gap: 22px; align-items: start; }
+.cb-layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; align-items: start; }
 .cb-lista, .cb-detalhe { display: grid; gap: 18px; }
 .turno-barra { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; padding: 10px 12px; border-radius: 10px; background: var(--papel2); border: 1px solid var(--linha); margin-bottom: 12px; }
 .turno-barra.ativo { border-color: var(--tinta2); }
@@ -620,7 +620,7 @@ body.rol-aberta .pagina { padding-bottom: calc(min(58vh, 560px) + 60px); }
 .bm-cols { display: flex; align-items: center; gap: 6px; font-weight: 600; font-size: .88rem; }
 .bm-cols .inp { min-height: 34px; padding: 2px; }
 .bm.recolhido .bm-corpo { display: none; }
-.bm-vp { position: relative; height: min(66vh, 620px); overflow: hidden; background: #ded7ca; background-image: radial-gradient(rgba(29, 27, 24, .16) 1px, transparent 1px); background-size: 22px 22px; cursor: grab; touch-action: none; }
+.bm-vp { position: relative; height: min(84vh, 900px); min-height: 460px; overflow: hidden; background: #ded7ca; background-image: radial-gradient(rgba(29, 27, 24, .16) 1px, transparent 1px); background-size: 22px 22px; cursor: grab; touch-action: none; }
 .bm-vp:active { cursor: grabbing; }
 .bm-mundo { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
 .bm-img { position: absolute; left: 0; top: 0; max-width: none; user-select: none; pointer-events: none; box-shadow: 0 10px 30px -10px rgba(0, 0, 0, .5); }
@@ -686,7 +686,7 @@ body.rol-aberta .pagina { padding-bottom: calc(min(58vh, 560px) + 60px); }
 /* ---------- responsivo ---------- */
 @media (max-width: 1100px) {
   .ficha-cols, .gm-cols { grid-template-columns: 1fr; }
-  .cb-layout { grid-template-columns: 1fr; }
+  .cb-layout { grid-template-columns: minmax(0, 1fr); }
   .topo { grid-template-columns: auto auto; } .topo-meio { grid-column: 1 / -1; order: 3; } .tabs { justify-content: flex-start; }
 }
 @media (max-width: 760px) {
@@ -796,6 +796,49 @@ body.rol-aberta .pagina { padding-bottom: calc(min(58vh, 560px) + 60px); }
 .bm-mod-l { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; padding: 6px 10px; border: 1px solid var(--linha); border-radius: 8px; background: #fff; }
 .bm-mod-l span { flex: 1; color: var(--tinta2); font-size: .92rem; }
 @media (max-width: 760px) { .raca-ed, .raca-ficha, .atq-topo { grid-template-columns: 1fr; } .raca-l { grid-template-columns: 1fr auto; } }
+
+/* ---------- combate: fila de ação horizontal, painel de token ---------- */
+.cb-ordem .win-bar { flex-wrap: wrap; gap: 8px; }
+.cb-prep { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-left: auto; }
+.cb-ordem .turno-barra .tb-bts { width: auto; }
+.cb-ordem .ci-lista { display: flex; gap: 10px; overflow-x: auto; padding: 4px 2px 10px; scroll-snap-type: x proximity; }
+.cb-ordem .ci { flex: 0 0 210px; grid-template-columns: auto 1fr; grid-template-rows: auto auto; align-items: start; scroll-snap-align: start; }
+.cb-ordem .ci .ci-bts { grid-column: 1 / -1; display: flex; justify-content: flex-end; gap: 4px; margin-top: -4px; }
+.cb-ordem .ci-nome { white-space: normal; line-height: 1.2; }
+.cb-ordem .ci.vez { transform: translateY(-2px); }
+.cb-ordem .vazio { width: 100%; }
+.cc-nome { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.cc-guia { min-height: 32px; }
+.bm-amb { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-left: auto; }
+.bm-amb .btn { min-height: 32px; }
+.bm-amb-dica { margin: 8px 0 0; }
+.bm-tk.arrastando { z-index: 5; } .bm-tk.arrastando .bm-tk-img { box-shadow: 0 0 0 4px #fff, 0 12px 24px rgba(0, 0, 0, .45); }
+.bm-tk-dist { position: absolute; top: -30px; left: 50%; transform: translateX(-50%); white-space: nowrap; background: var(--azul); color: #fff; font: 600 13px var(--f-ui); padding: 2px 8px; border-radius: 999px; pointer-events: none; }
+.bm-tk-dist.longe { background: var(--verm); }
+.bm-tk-fantasma { position: absolute; border: 3px dashed rgba(29, 27, 24, .45); border-radius: 50%; pointer-events: none; }
+.bm-tk-conds { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: #fff; border: 1px solid var(--linha2); border-radius: 999px; padding: 0 5px; font-size: 13px; line-height: 20px; white-space: nowrap; pointer-events: none; }
+.bm-tk-ab { z-index: 1; }
+.bm-pop { position: absolute; z-index: 6; width: 300px; max-height: calc(100% - 16px); overflow: auto; background: var(--papel); border: 1px solid var(--linha2); border-radius: 12px; box-shadow: 0 16px 40px -12px rgba(0, 0, 0, .55); padding: 10px 12px 12px; display: grid; gap: 10px; cursor: default; touch-action: auto; }
+.bm-pop-h { display: flex; align-items: center; gap: 8px; } .bm-pop-h b { flex: 1; font-size: 1.05rem; }
+.bm-pop-carta { background: #fff; border: 1px solid var(--linha2); border-radius: 4px; padding: 0 6px; font-weight: 700; }
+.bm-pop-st { margin: 0; font-size: .84rem; color: var(--tinta2); }
+.bm-pop-l { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.bm-pop-conds { display: flex; flex-wrap: wrap; gap: 6px; }
+.bm-pop-conds .cond { font-size: .82rem; padding: .25em .6em; min-height: 32px; }
+.bm-pop-bts { display: flex; flex-wrap: wrap; gap: 6px; }
+@media (max-width: 640px) { .bm-pop { width: calc(100% - 16px); } .cb-ordem .ci { flex-basis: 180px; } }
+
+.cb-layout { grid-template-areas: "mapa" "ordem" "ficha"; }
+.cb-mapa { grid-area: mapa; min-width: 0; } .cb-ordem { grid-area: ordem; min-width: 0; } .cb-ficha { grid-area: ficha; min-width: 0; }
+@media (min-width: 1240px) {
+  .cb-layout { grid-template-columns: minmax(0, 1fr) 430px; grid-template-areas: "mapa ficha" "ordem ficha"; }
+  .cb-ficha { position: sticky; top: 84px; max-height: calc(100vh - 100px); overflow: auto; border-radius: 12px; }
+  .cb-ficha .cc .cc-head { grid-template-columns: 72px 1fr; }
+  .cb-ficha .cc .cc-head .retrato { width: 72px; height: 72px; }
+  .cb-ficha .cc-head-bts { grid-column: 1 / -1; }
+  .cb-ficha .cc-stats { grid-template-columns: repeat(auto-fit, minmax(84px, 1fr)); }
+  .cb-ficha .cc-estado { grid-template-columns: 1fr; }
+}
 
 </style>
 </head>
@@ -1553,8 +1596,11 @@ const FB = {
     ]);
     this.app = ap.initializeApp(FIREBASE_CONFIG);
     this.am = au; this.fm = fs;
-    this.auth = au.getAuth(this.app);
-    try { await au.setPersistence(this.auth, au.browserLocalPersistence); } catch (e) { }
+    /* sessão guardada no IndexedDB, não no localStorage: o localStorage tem só ~5 MB e pode já estar cheio
+       (por exemplo, com dados antigos do modo local), o que fazia o login falhar com "exceeded the quota". */
+    try {
+      this.auth = au.initializeAuth(this.app, { persistence: [au.indexedDBLocalPersistence, au.browserSessionPersistence, au.inMemoryPersistence] });
+    } catch (e) { this.auth = au.getAuth(this.app); }
     try { this.auth.languageCode = 'pt'; } catch (e) { }
     try {
       this.fs = fs.initializeFirestore(this.app, { ignoreUndefinedProperties: true, localCache: fs.persistentLocalCache({ tabManager: fs.persistentMultipleTabManager() }) });
@@ -1571,8 +1617,17 @@ const FB = {
 const D = {
   raw: null, modo: 'local', fb: false, assets: null, userCap: null, podeEscrever: true,
   _filas: new Map(),
+  /* com o Firebase ativo, apaga o que o antigo modo local guardava neste navegador
+     (banco inteiro no localStorage e imagens no IndexedDB). Preferências pequenas de tela ficam. */
+  limparLocal() {
+    try {
+      ['wildcard.db.v1', 'wc.sessao'].forEach(k => localStorage.removeItem(k));
+      Object.keys(localStorage).filter(k => k.startsWith('wildcard.db')).forEach(k => localStorage.removeItem(k));
+    } catch (e) { }
+    try { indexedDB.deleteDatabase('wildcard-img'); } catch (e) { }
+  },
   async iniciar() {
-    try { this.raw = await FB.iniciar(); this.modo = 'nuvem'; this.fb = true; return this.modo; }
+    try { this.raw = await FB.iniciar(); this.modo = 'nuvem'; this.fb = true; this.limparLocal(); return this.modo; }
     catch (e) { console.warn('Firebase indisponível, tentando outro modo', e); }
     let db = null;
     if (window.claude && typeof window.claude.use === 'function') {
@@ -1913,7 +1968,7 @@ Img.aoCarregar = () => softRender();
 function render() {
   const app = $('#app'); if (!app) return;
   const ae = document.activeElement; const foco = ae && ae.id && app.contains(ae) ? { id: ae.id, s: ae.selectionStart, e: ae.selectionEnd } : null;
-  const sc = $$('[data-scroll]', app).map(el => [el.dataset.scroll, el.scrollTop]);
+  const sc = $$('[data-scroll]', app).map(el => [el.dataset.scroll, el.scrollTop, el.scrollLeft]);
   const y = window.scrollY;
   let html = '';
   if (S.view === 'carregando') html = viewCarregando();
@@ -1923,7 +1978,7 @@ function render() {
   app.innerHTML = html;
   document.body.dataset.view = S.view;
   if (foco) { const el = document.getElementById(foco.id); if (el) { el.focus({ preventScroll: true }); try { if (foco.s != null) el.setSelectionRange(foco.s, foco.e); } catch (e) { } } }
-  sc.forEach(([k, t]) => { const el = $(`[data-scroll="${k}"]`, app); if (el) el.scrollTop = t; });
+  sc.forEach(([k, t, l]) => { const el = $(`[data-scroll="${k}"]`, app); if (el) { el.scrollTop = t; el.scrollLeft = l; } });
   window.scrollTo(0, y);
   AF.forEach(fn => { try { fn(); } catch (e) { console.error(e); } });
   renderRolagensWidget();
@@ -4108,8 +4163,7 @@ function viewCombate() {
   if (!S.cbSel) { const p = ents.find(x => cbPode(x) && (gm || x.tipo === 'pc')); if (p) S.cbSel = p.id; }
   const sel = ents.find(x => x.id === S.cbSel);
   const comCuringa = ents.some(x => x.carta && x.carta.curinga);
-  const amb = cb.ambiente || {}; const luz = LUZES.find(l => l[0] === (+amb.luz || 0)) || LUZES[0]; const clima = CLIMAS[amb.clima || ''] || CLIMAS[''];
-
+  
   const lista = ents.length ? ents.map(en => {
     const i = cbInfo(en); const pode = cbPode(en); const naVez = cb.turno === en.id; const verStats = gm || en.tipo === 'pc'; const fora = cbFora(en, i);
     return `<div class="ci ${pode ? 'clic' : ''} ${en.id === S.cbSel ? 'sel' : ''} ${naVez ? 'vez' : ''} t-${en.tipo} ${fora ? 'fora' : ''} ${en.e.oculto ? 'oculto' : ''}" ${pode || gm ? `data-a="cbSel" data-id="${en.id}" role="button" tabindex="0"` : ''}>
@@ -4133,28 +4187,18 @@ function viewCombate() {
   </div>
   ${comCuringa ? '<p class="aviso-curinga">★ Curinga na mesa: quem tem age quando quiser e soma +2 em testes e dano. O baralho será embaralhado na próxima rodada.</p>' : ''}`;
 
-  const ambiente = `<div class="amb-linha">
-    <span class="chip ${luz[0] ? 'perigo' : ''}" title="${esc(luz[2])}">Luz: ${luz[1]}${luz[0] ? ` (−${luz[0]})` : ''}</span>
-    <span class="chip">${esc(clima.nome)}</span>
-    ${gm ? `<button class="btn sm fant" data-a="cbAmbiente">Ajustar ambiente</button>` : ''}
-  </div>${clima.dica ? `<p class="dica">${esc(clima.dica)}</p>` : ''}${luz[0] ? `<p class="dica">A penalidade de luz entra sozinha em ataques e em Perceber. Quem tem Visão no Escuro ignora Penumbra e Escuridão.</p>` : ''}`;
+  const preparar = gm ? `<button class="btn sm pri" data-a="cbAddModal">${ICO.mais} Adicionar ao combate</button><span class="dica mono">${(cb.baralho || []).length} cartas no baralho</span>`
+    : meusFora.map(f => `<button class="btn sm sec" data-a="cbEntrar" data-id="${f.id}">Entrar: ${esc(f.nome || 'Sem nome')}</button>`).join('');
 
   return `<div class="cb-layout">
-    <div class="cb-lista">
-      ${gm ? `<section class="win"><div class="win-bar"><span class="win-tit">Preparar</span></div><div class="win-body pilha">
-        <button class="btn pri largo" data-a="cbAddModal">${ICO.mais} Adicionar ao combate</button>
-        <p class="dica">${(cb.baralho || []).length} cartas no baralho.</p></div></section>` : ''}
-      ${!gm && meusFora.length ? `<section class="win"><div class="win-bar"><span class="win-tit">Entrar no combate</span></div><div class="win-body pilha">${meusFora.map(f => `<button class="btn sec largo" data-a="cbEntrar" data-id="${f.id}">${esc(f.nome || 'Sem nome')}</button>`).join('')}</div></section>` : ''}
-      <section class="win"><div class="win-bar"><span class="win-tit">Ordem de ação</span></div><div class="win-body">${barra}<div class="ci-lista">${lista}</div></div></section>
-      <section class="win"><div class="win-bar"><span class="win-tit">Ambiente</span></div><div class="win-body">${ambiente}</div></section>
-      <details class="box" data-k="cb.guia" ${aberto('cb.guia')}><summary class="box-h"><span>Guia rápido de combate</span></summary><div class="box-c guia">${GUIA_COMBATE.map(([t, d]) => `<p><b>${esc(t)}.</b> ${esc(d)}</p>`).join('')}</div></details>
-    </div>
-    <div class="cb-detalhe">
-      ${sel ? fichaCombate(sel) : `<div class="win"><div class="win-body vazio">${ents.length ? 'Clique em um participante para abrir a ficha de combate.' : 'Adicione participantes para começar.'}</div></div>`}
-      <div id="bmSlot"></div>
-    </div>
+    <div class="cb-ficha" data-scroll="cbFicha">${sel ? fichaCombate(sel) : `<div class="win"><div class="win-body vazio">${ents.length ? 'Clique em um participante (no mapa ou na fila de ação) para abrir a ficha de combate.' : 'Adicione participantes para começar.'} <button class="btn sm fant" data-a="cbGuia">Guia rápido de combate</button></div></div>`}</div>
+    <div id="bmSlot" class="cb-mapa"></div>
+    <section class="win cb-ordem"><div class="win-bar"><span class="win-tit">Ordem de ação</span><span class="cb-prep">${preparar}</span></div>
+      <div class="win-body">${barra}<div class="ci-lista" data-scroll="cbFila">${lista}</div></div></section>
   </div>`;
 }
+
+A.cbGuia = () => abrirModal(`<div class="guia">${GUIA_COMBATE.map(([t, d]) => `<p><b>${esc(t)}.</b> ${esc(d)}</p>`).join('')}</div>`, { titulo: 'Guia rápido de combate' });
 
 /* ---------- ficha de combate ---------- */
 function fichaCombate(en) {
@@ -4178,7 +4222,7 @@ function fichaCombate(en) {
   const defendendo = i.conds.includes('defendendo');
   return `<article class="cc win t-${en.tipo}">
     <div class="win-bar"><span class="win-tit">Ficha de combate</span>${cartaMini(en.carta)}</div>
-    <div class="cc-head">${ret}<div class="cc-id"><h2>${esc(en.nome)}</h2><p>${en.tipo === 'pc' ? esc(f.conceito || '') + ' · ' + deriv(f).posto + (f.raca ? ' · ' + esc(f.raca) : '') : en.tipo === 'npc' ? (f.carta === 'selvagem' ? '★ Carta Selvagem' : 'Extra') : 'Participante avulso'}</p></div>
+    <div class="cc-head">${ret}<div class="cc-id"><div class="cc-nome"><h2>${esc(en.nome)}</h2><button class="btn sm fant cc-guia" data-a="cbGuia" title="Regras de combate em uma tela">📖 Guia rápido</button></div><p>${en.tipo === 'pc' ? esc(f.conceito || '') + ' · ' + deriv(f).posto + (f.raca ? ' · ' + esc(f.raca) : '') : en.tipo === 'npc' ? (f.carta === 'selvagem' ? '★ Carta Selvagem' : 'Extra') : 'Participante avulso'}</p></div>
       <div class="cc-head-bts">${en.tipo === 'pc' && pode ? `<button class="btn sm fant" data-a="abrirFichaCb" data-id="${f.id}">Ficha completa</button>` : ''}${en.tipo === 'npc' && S.gm ? `<button class="btn sm fant" data-a="abrirNpcCb" data-id="${f.id}">Ficha do NPC</button>` : ''}</div></div>
     ${verStats ? `<div class="cc-stats"><div class="dv"><b class="mono">${i.aparar}${defendendo ? '<small>+4</small>' : ''}</b><span>Aparar</span></div><div class="dv"><b class="mono">${i.res}${i.arm ? `<small>(${i.arm})</small>` : ''}</b><span>Resistência</span></div><div class="dv"><b class="mono">${i.mov}</b><span>Movimentação</span></div>${i.selvagem ? `<div class="dv"><b class="mono">${i.bennies}</b><span>Benes</span></div>` : ''}</div>` : ''}
     ${pode ? `<div class="cc-sec"><span class="lbl">Ações rápidas</span><div class="bts-l">
@@ -4524,48 +4568,115 @@ function bmCriar() {
     else if (a === 'nevoaNada') bmSalvarNevoa([]);
     else if (a === 'modTirar') { const mods = { ...(cbEstado().modelos || {}) }; delete mods[b.dataset.id]; cbSalvarTudo({ ...cbEstado(), modelos: mods }); }
     else if (a === 'modDano') danoEmArea(b.dataset.id);
+    else if (a === 'popFechar') { S.bmPop = null; bmDesenharPop(); }
   });
   bmNode.addEventListener('change', ev => {
     if (ev.target.matches('[data-bm-cols]')) { const m = cbEstado().mapa || {}; cbSalvar({ mapa: { ...m, cols: clamp(+ev.target.value || 20, 4, 80) } }); }
   });
   const vp = $('.bm-vp', bmNode);
-  vp.addEventListener('wheel', ev => { ev.preventDefault(); bmZoom(bmView.z * Math.exp(-ev.deltaY * 0.0015), ev.clientX, ev.clientY); }, { passive: false });
+  vp.addEventListener('wheel', ev => { if (ev.target.closest('.bm-pop')) return; ev.preventDefault(); bmZoom(bmView.z * Math.exp(-ev.deltaY * 0.0015), ev.clientX, ev.clientY); }, { passive: false });
   vp.addEventListener('pointerdown', ev => {
-    if (ev.target.closest('.bm-zoom')) return;
+    if (ev.button > 0 || ev.target.closest('.bm-zoom,.bm-pop')) return;
     const p = bmTelaMundo(ev.clientX, ev.clientY);
     const tk = ev.target.closest('.bm-tk');
     const md = ev.target.closest('.bm-mod');
     if (bmFerr === 'regua') bmArr = { tipo: 'regua', a: bmCelula(p), b: bmCelula(p) };
     else if (bmFerr === 'nevoa' && S.gm) { bmNevoaLocal = new Set(cbNevoa()); bmArr = { tipo: 'nevoa' }; bmPintar(p); }
     else if (bmFerr === 'modelo' && !md) { const c = bmCelula(p); bmArr = { tipo: 'modelo', x: c.x + .5, y: c.y + .5, ang: 0, p0: p }; }
+    else if (tk) {
+      /* token: arrasta se puder; clique simples abre o painel do token */
+      const t = bmPos(tk.dataset.id);
+      bmArr = { tipo: 'tk', id: tk.dataset.id, pode: tk.dataset.pode === '1', sx: ev.clientX, sy: ev.clientY, ox: p.x - t.x * BM_CELL, oy: p.y - t.y * BM_CELL, x0: t.x, y0: t.y, x: t.x, y: t.y, moveu: false };
+    }
     else if (md && (S.gm || md.dataset.autor === S.user.uname)) { const m = (cbEstado().modelos || {})[md.dataset.id]; bmArr = { tipo: 'movmod', id: md.dataset.id, ox: p.x / BM_CELL - m.x, oy: p.y / BM_CELL - m.y, m: { ...m } }; }
-    else if (tk && tk.dataset.pode === '1') { const t = bmPos(tk.dataset.id); bmArr = { tipo: 'tk', id: tk.dataset.id, el: tk, ox: p.x - t.x * BM_CELL, oy: p.y - t.y * BM_CELL, x: t.x, y: t.y, moveu: false }; }
-    else if (tk) { S.cbSel = tk.dataset.id; render(); return; }
-    else bmArr = { tipo: 'pan', sx: ev.clientX, sy: ev.clientY, x: bmView.x, y: bmView.y };
-    vp.setPointerCapture(ev.pointerId);
+    else bmArr = { tipo: 'pan', sx: ev.clientX, sy: ev.clientY, x: bmView.x, y: bmView.y, moveu: false };
+    ev.preventDefault();
   });
-  vp.addEventListener('pointermove', ev => {
-    if (!bmArr) return; const p = bmTelaMundo(ev.clientX, ev.clientY);
-    if (bmArr.tipo === 'pan') { bmView.x = bmArr.x + ev.clientX - bmArr.sx; bmView.y = bmArr.y + ev.clientY - bmArr.sy; bmAplicar(); }
+  /* movimento e soltura escutados na janela: continuam funcionando mesmo se a tela for redesenhada no meio do arraste */
+  window.addEventListener('pointermove', ev => {
+    if (!bmArr || !bmNode || !bmNode.isConnected) return; const p = bmTelaMundo(ev.clientX, ev.clientY);
+    if (bmArr.tipo === 'pan') { if (Math.hypot(ev.clientX - bmArr.sx, ev.clientY - bmArr.sy) > 4) bmArr.moveu = true; bmView.x = bmArr.x + ev.clientX - bmArr.sx; bmView.y = bmArr.y + ev.clientY - bmArr.sy; bmAplicar(); }
     else if (bmArr.tipo === 'regua') { bmArr.b = bmCelula(p); bmDesenharSvg(); }
     else if (bmArr.tipo === 'nevoa') bmPintar(p);
     else if (bmArr.tipo === 'modelo') { bmArr.ang = Math.atan2(p.y - bmArr.y * BM_CELL, p.x - bmArr.x * BM_CELL); bmDesenharSvg(); }
     else if (bmArr.tipo === 'movmod') { bmArr.m.x = Math.round((p.x / BM_CELL - bmArr.ox) * 2) / 2; bmArr.m.y = Math.round((p.y / BM_CELL - bmArr.oy) * 2) / 2; bmDesenharSvg(); }
-    else { const nx = (p.x - bmArr.ox) / BM_CELL, ny = (p.y - bmArr.oy) / BM_CELL; bmArr.el.style.left = nx * BM_CELL + 'px'; bmArr.el.style.top = ny * BM_CELL + 'px'; bmArr.nx = nx; bmArr.ny = ny; bmArr.moveu = true; }
+    else if (bmArr.tipo === 'tk') {
+      if (!bmArr.pode) return;
+      if (!bmArr.moveu && Math.hypot(ev.clientX - bmArr.sx, ev.clientY - bmArr.sy) < 6) return;
+      if (!bmArr.moveu) { bmArr.moveu = true; S.bmPop = null; bmDesenharPop(); }
+      const L = bmLimites(); const en = cbEn(bmArr.id); const sz = en ? tamTk(cbInfo(en).tam) : 1;
+      const nx = clamp(Math.round((p.x - bmArr.ox) / BM_CELL), 0, Math.max(0, L.cols - sz)), ny = clamp(Math.round((p.y - bmArr.oy) / BM_CELL), 0, Math.max(0, L.rows - sz));
+      if (nx === bmArr.x && ny === bmArr.y && $('.bm-tk.arrastando', bmNode)) return;
+      bmArr.x = nx; bmArr.y = ny; bmMostrarArraste();
+    }
   });
-  const fim = async () => {
+  const fim = async ev => {
     const a = bmArr; bmArr = null; if (!a) return;
-    if (a.tipo === 'regua') { bmArr = null; S.bmRegua = { a: a.a, b: a.b, ts: Date.now() }; bmDesenharSvg(); setTimeout(() => { if (S.bmRegua && Date.now() - S.bmRegua.ts >= 2900) { S.bmRegua = null; bmDesenharSvg(); } }, 3000); return; }
+    if (a.tipo === 'pan') { if (!a.moveu && S.bmPop) { S.bmPop = null; bmDesenharPop(); } return; }
+    if (a.tipo === 'regua') { S.bmRegua = { a: a.a, b: a.b, ts: Date.now() }; bmDesenharSvg(); setTimeout(() => { if (S.bmRegua && Date.now() - S.bmRegua.ts >= 2900) { S.bmRegua = null; bmDesenharSvg(); } }, 3000); return; }
     if (a.tipo === 'nevoa') { bmSalvarNevoa([...bmNevoaLocal]); bmNevoaLocal = null; return; }
     if (a.tipo === 'modelo') { const id = uid('md'); await cbSalvar({ modelos: { [id]: { tipo: bmModeloTipo, x: a.x, y: a.y, ang: a.ang || 0, autor: S.user.uname } } }); bmFerr = 'mover'; bmRender(); return; }
     if (a.tipo === 'movmod') { await cbSalvar({ modelos: { [a.id]: { x: a.m.x, y: a.m.y } } }); return; }
     if (a.tipo !== 'tk') return;
-    if (a.moveu) { const x = Math.round(a.nx), y = Math.round(a.ny); S.tokens[a.id] = { ...(S.tokens[a.id] || {}), x, y }; bmRender(); await D.set(cpath('tokens/' + a.id), { x, y }).catch(() => { }); }
-    else { S.cbSel = a.id; render(); }
+    if (a.moveu) {
+      if (a.x !== a.x0 || a.y !== a.y0) { S.tokens[a.id] = { ...(S.tokens[a.id] || {}), x: a.x, y: a.y }; bmRender(); await D.set(cpath('tokens/' + a.id), { x: a.x, y: a.y }).catch(() => { }); }
+      else bmRender();
+      return;
+    }
+    /* clique: seleciona e abre o painel do token */
+    S.bmPop = S.bmPop === a.id ? null : a.id;
+    if (S.cbSel !== a.id && (cbPode(cbEn(a.id) || {}) || S.gm)) { S.cbSel = a.id; render(); } else bmDesenharPop();
   };
-  vp.addEventListener('pointerup', fim); vp.addEventListener('pointercancel', () => { bmArr = null; bmRender(); });
-  vp.addEventListener('dblclick', ev => { if (ev.target.closest('.bm-tk,.bm-zoom') || bmFerr !== 'mover') return; const p = bmTelaMundo(ev.clientX, ev.clientY); publicarNaMesa({ tipo: 'ping', x: p.x, y: p.y }); bmMostrarPing({ x: p.x, y: p.y, autorNome: S.user.nome }); });
+  window.addEventListener('pointerup', fim);
+  window.addEventListener('pointercancel', () => { if (bmArr) { bmArr = null; bmRender(); } });
+  window.addEventListener('keydown', ev => { if (ev.key === 'Escape' && S.bmPop) { S.bmPop = null; bmDesenharPop(); } });
+  vp.addEventListener('dblclick', ev => { if (ev.target.closest('.bm-tk,.bm-zoom,.bm-pop') || bmFerr !== 'mover') return; const p = bmTelaMundo(ev.clientX, ev.clientY); publicarNaMesa({ tipo: 'ping', x: p.x, y: p.y }); bmMostrarPing({ x: p.x, y: p.y, autorNome: S.user.nome }); });
 }
+/* posição do token durante o arraste, com distância em quadros */
+function bmMostrarArraste() {
+  const a = bmArr; if (!a || a.tipo !== 'tk') return;
+  const el = $(`.bm-tk[data-id="${a.id}"]`, bmNode); if (!el) return;
+  el.classList.add('arrastando'); el.style.left = a.x * BM_CELL + 'px'; el.style.top = a.y * BM_CELL + 'px';
+  const en = cbEn(a.id); const mv = en ? cbInfo(en).mov : 6; const d = Math.max(Math.abs(a.x - a.x0), Math.abs(a.y - a.y0));
+  let tag = $('.bm-tk-dist', el); if (!tag) { tag = document.createElement('b'); tag.className = 'bm-tk-dist'; el.appendChild(tag); }
+  tag.textContent = d + (d === 1 ? ' quadro' : ' quadros'); tag.classList.toggle('longe', d > mv);
+  tag.title = d > mv ? 'Além da Movimentação: precisa Correr (+d6) e sofre −2 nas ações' : '';
+  let fant = $('.bm-tk-fantasma', bmNode); const s = en ? tamTk(cbInfo(en).tam) : 1;
+  if (!fant) { fant = document.createElement('div'); fant.className = 'bm-tk-fantasma'; $('.bm-tokens', bmNode).prepend(fant); }
+  fant.style.left = a.x0 * BM_CELL + 'px'; fant.style.top = a.y0 * BM_CELL + 'px'; fant.style.width = fant.style.height = s * BM_CELL + 'px';
+}
+
+/* ---------- painel do token no mapa (estado e condições) ---------- */
+function bmPopHtml(en) {
+  const i = cbInfo(en); const pode = cbPode(en); const dis = pode ? '' : 'disabled'; const ver = S.gm || en.tipo === 'pc';
+  const pips = Array.from({ length: Math.max(i.maxF, 1) }, (_, k) => `<button class="pip ${i.feridas > k ? 'on' : ''}" data-a="cbPip" data-id="${en.id}" data-i="${k + 1}" ${dis} aria-label="Ferimento ${k + 1}"></button>`).join('');
+  const conds = Object.entries(CONDICOES).filter(([k]) => k !== 'abalado' && k !== 'espera');
+  return `<div class="bm-pop-h"><b>${esc(en.nome)}</b>${en.carta ? `<span class="mono bm-pop-carta">${cartaTxt(en.carta)}</span>` : ''}<button class="btn ico sm fant" data-bm="popFechar" aria-label="Fechar painel">${ICO.x}</button></div>
+    ${ver ? `<p class="bm-pop-st mono">APA ${i.aparar}${i.conds.includes('defendendo') ? '+4' : ''} · RES ${i.res}${i.arm ? `(${i.arm})` : ''} · MOV ${i.mov}</p>` : ''}
+    <div class="bm-pop-l"><span class="lbl">Ferimentos</span><div class="pips">${pips}${cbFora(en, i) ? '<span class="inc on">INC</span>' : ''}</div></div>
+    <div class="bm-pop-l"><button class="toggle ${i.abalado ? 'on' : ''}" data-a="cbAbalado" data-id="${en.id}" ${dis} aria-pressed="${i.abalado}">💫 ${i.abalado ? 'Abalado' : 'Não abalado'}</button></div>
+    <div class="bm-pop-conds">${conds.map(([k, c]) => `<button class="cond ${i.conds.includes(k) ? 'on' : ''}" data-a="cbCondTog" data-id="${en.id}" data-k="${k}" ${dis} title="${esc(c.desc)}" aria-pressed="${i.conds.includes(k)}">${c.ico} ${esc(c.nome)}</button>`).join('')}</div>
+    ${pode ? `<div class="bm-pop-bts"><button class="btn sm perigo" data-a="cbReceber" data-id="${en.id}">Receber dano</button>${i.abalado && en.tipo !== 'avulso' ? `<button class="btn sm fant" data-a="cbRecuperar" data-id="${en.id}">Recuperar</button>` : ''}<button class="btn sm fant" data-a="bmVerFicha" data-id="${en.id}">Ficha de combate</button></div>` : ''}
+    ${S.gm ? `<div class="bm-pop-bts"><button class="btn sm fant" data-a="cbOcultar" data-id="${en.id}">${en.e.oculto ? 'Mostrar aos jogadores' : 'Ocultar dos jogadores'}</button><button class="btn sm fant perigo-txt" data-a="cbRemover" data-id="${en.id}">Tirar do combate</button></div>` : ''}`;
+}
+function bmDesenharPop() {
+  if (!bmNode) return; const vp = $('.bm-vp', bmNode); let pop = $('.bm-pop', vp);
+  const en = S.bmPop ? cbEntradas().find(x => x.id === S.bmPop) : null;
+  if (!en || bmRecolhido) { if (pop) pop.remove(); if (S.bmPop && !en) S.bmPop = null; return; }
+  if (!pop) { pop = document.createElement('div'); pop.className = 'bm-pop'; pop.setAttribute('role', 'dialog'); vp.appendChild(pop); }
+  const html = bmPopHtml(en); if (pop.dataset.h !== html) { pop.innerHTML = html; pop.dataset.h = html; pop.setAttribute('aria-label', 'Painel de ' + en.nome); }
+  bmPosPop();
+}
+function bmPosPop() {
+  if (!bmNode) return; const vp = $('.bm-vp', bmNode); const pop = $('.bm-pop', vp); if (!pop || !S.bmPop) return;
+  const p = bmPos(S.bmPop); const en = cbEn(S.bmPop); const s = en ? tamTk(cbInfo(en).tam) : 1;
+  const W = pop.offsetWidth || 300, H = pop.offsetHeight || 260;
+  let x = bmView.x + (p.x + s) * BM_CELL * bmView.z + 12, y = bmView.y + p.y * BM_CELL * bmView.z;
+  if (x + W > vp.clientWidth - 8) x = bmView.x + p.x * BM_CELL * bmView.z - W - 12;
+  pop.style.left = clamp(x, 8, Math.max(8, vp.clientWidth - W - 8)) + 'px'; pop.style.top = clamp(y, 8, Math.max(8, vp.clientHeight - H - 8)) + 'px';
+}
+A.cbCondTog = el => { const en = cbEn(el.dataset.id); if (!en) return; const c = cbInfo(en).conds; const k = el.dataset.k; cbPatchEnt(en, { condicoes: c.includes(k) ? c.filter(x => x !== k) : [...c, k] }); };
+A.bmVerFicha = el => { S.cbSel = el.dataset.id; S.bmPop = null; render(); const cc = $('.cc'); if (cc) cc.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
 function bmLimites() {
   const m = cbEstado().mapa; const cols = (m && m.cols) || 20;
   const w = cols * BM_CELL; const h = m && m.ref && m.w ? w * m.h / m.w : 12 * BM_CELL;
@@ -4573,7 +4684,7 @@ function bmLimites() {
 }
 function bmCelula(p) { return { x: Math.floor(p.x / BM_CELL), y: Math.floor(p.y / BM_CELL) }; }
 function bmTelaMundo(cx, cy) { const r = $('.bm-vp', bmNode).getBoundingClientRect(); return { x: (cx - r.left - bmView.x) / bmView.z, y: (cy - r.top - bmView.y) / bmView.z }; }
-function bmAplicar() { const m = $('.bm-mundo', bmNode); if (m) m.style.transform = `translate(${bmView.x}px,${bmView.y}px) scale(${bmView.z})`; }
+function bmAplicar() { const m = $('.bm-mundo', bmNode); if (m) m.style.transform = `translate(${bmView.x}px,${bmView.y}px) scale(${bmView.z})`; bmPosPop(); }
 function bmZoom(nz, cx, cy) { const r = $('.bm-vp', bmNode).getBoundingClientRect(); nz = clamp(nz, 0.2, 4); const wx = (cx - r.left - bmView.x) / bmView.z, wy = (cy - r.top - bmView.y) / bmView.z; bmView.z = nz; bmView.x = cx - r.left - wx * nz; bmView.y = cy - r.top - wy * nz; bmAplicar(); }
 function bmEnquadrar() { const vp = $('.bm-vp', bmNode); if (!vp || !vp.clientWidth) return; const L = bmLimites(); const z = clamp(Math.min(vp.clientWidth / (L.w + 40), vp.clientHeight / (L.h + 40)), 0.2, 3); bmView.z = z; bmView.x = (vp.clientWidth - L.w * z) / 2; bmView.y = (vp.clientHeight - L.h * z) / 2; bmAplicar(); }
 function bmPos(eid) {
@@ -4658,15 +4769,17 @@ function bmDesenharSvg() {
 function bmRender() {
   if (!bmNode) return;
   const cb = cbEstado(); const m = cb.mapa; const gm = S.gm; const amb = cb.ambiente || {};
+  const luzA = LUZES.find(l => l[0] === (+amb.luz || 0)) || LUZES[0]; const climaA = CLIMAS[amb.clima || ''] || CLIMAS[''];
   bmNode.classList.toggle('recolhido', bmRecolhido);
   $('.bm-seta', bmNode).textContent = bmRecolhido ? '▸' : '▾';
   $('.bm-ctl', bmNode).innerHTML = gm ? `<button class="btn sm fant" data-bm="mapa">${ICO.img} ${m && m.ref ? 'Trocar mapa' : 'Carregar mapa'}</button>${m && m.ref ? `<label class="bm-cols">Largura <input class="inp mini-n mono" type="number" min="4" max="80" value="${m.cols || 20}" data-bm-cols aria-label="Largura do mapa em quadros"> quadros</label><button class="btn sm fant" data-bm="grade" aria-pressed="${m.grade !== false}">Grade ${m.grade !== false ? 'ligada' : 'desligada'}</button><button class="btn sm fant perigo-txt" data-bm="tirar">Tirar mapa</button>` : ''}` : '';
-  if (bmRecolhido) { bmPararClima(); return; }
+  if (bmRecolhido) { bmPararClima(); bmDesenharPop(); return; }
   /* ferramentas */
   const F = (v, n, t) => `<button class="seg-b ${bmFerr === v ? 'on' : ''}" data-bm="ferr" data-v="${v}" title="${esc(t)}">${n}</button>`;
   $('.bm-ferr', bmNode).innerHTML = `<div class="seg mini">${F('mover', '✥ Mover', 'Arraste tokens e o fundo; duplo clique marca um ponto')}${F('regua', '📏 Régua', 'Arraste para medir em quadros')}${F('modelo', '◎ Área', 'Clique para colocar um modelo de área; no cone, arraste para apontar')}${gm ? F('nevoa', '☁ Névoa', 'Pinte para esconder ou revelar partes do mapa') : ''}</div>
     ${bmFerr === 'modelo' ? `<div class="seg mini">${Object.entries(MODELOS_AREA).map(([k, v]) => `<button class="seg-b ${bmModeloTipo === k ? 'on' : ''}" data-bm="mtipo" data-v="${k}">${v.nome}</button>`).join('')}</div>` : ''}
-    ${bmFerr === 'nevoa' && gm ? `<div class="seg mini"><button class="seg-b ${bmNevoaModo === 'ocultar' ? 'on' : ''}" data-bm="nmodo" data-v="ocultar">Esconder</button><button class="seg-b ${bmNevoaModo === 'revelar' ? 'on' : ''}" data-bm="nmodo" data-v="revelar">Revelar</button></div><button class="btn sm fant" data-bm="nevoaTudo">Cobrir tudo</button><button class="btn sm fant" data-bm="nevoaNada">Revelar tudo</button>` : ''}`;
+    ${bmFerr === 'nevoa' && gm ? `<div class="seg mini"><button class="seg-b ${bmNevoaModo === 'ocultar' ? 'on' : ''}" data-bm="nmodo" data-v="ocultar">Esconder</button><button class="seg-b ${bmNevoaModo === 'revelar' ? 'on' : ''}" data-bm="nmodo" data-v="revelar">Revelar</button></div><button class="btn sm fant" data-bm="nevoaTudo">Cobrir tudo</button><button class="btn sm fant" data-bm="nevoaNada">Revelar tudo</button>` : ''}
+    <span class="bm-amb"><span class="chip ${luzA[0] ? 'perigo' : ''}" title="${esc(luzA[2])}">${luzA[0] ? '🌘' : '☀'} ${luzA[1]}${luzA[0] ? ` −${luzA[0]}` : ''}</span><span class="chip" title="${esc(climaA.dica || '')}">${esc(climaA.nome)}</span>${gm ? `<button class="btn sm fant" data-a="cbAmbiente">Ambiente</button>` : ''}</span>`;
   const L = bmLimites();
   const img = $('.bm-img', bmNode); const src = m && m.ref ? Img.src(m.ref) : '';
   img.style.display = src ? 'block' : 'none'; if (src && img.getAttribute('src') !== src) img.src = src;
@@ -4675,14 +4788,17 @@ function bmRender() {
   $('.bm-vazio', bmNode).innerHTML = !(m && m.ref) ? `<p>${gm ? 'Sem mapa. Carregue uma imagem ou use a grade vazia.' : 'O mestre ainda não carregou um mapa.'}</p>` : '';
   const ents = cbEntradas();
   $('.bm-tokens', bmNode).innerHTML = ents.map(en => {
-    const p = bmPos(en.id); const i = cbInfo(en); const pode = cbPode(en); const ret = en.ficha && en.ficha.retrato ? Img.src(en.ficha.retrato.ref) : '';
+    const arr = bmArr && bmArr.tipo === 'tk' && bmArr.id === en.id && bmArr.moveu;
+    const p = arr ? { x: bmArr.x, y: bmArr.y } : bmPos(en.id); const i = cbInfo(en); const pode = cbPode(en); const ret = en.ficha && en.ficha.retrato ? Img.src(en.ficha.retrato.ref) : '';
     const s = tamTk(i.tam); const fora = cbFora(en, i);
     if (!pode && noNevoa(p.x, p.y)) return '';
     return `<div class="bm-tk t-${en.tipo} lado-${en.lado} ${cb.turno === en.id ? 'vez' : ''} ${S.cbSel === en.id ? 'sel' : ''} ${fora ? 'fora' : ''} ${en.e.oculto ? 'oculto' : ''}" data-id="${en.id}" data-pode="${pode ? 1 : 0}" style="left:${p.x * BM_CELL}px;top:${p.y * BM_CELL}px;width:${s * BM_CELL}px;height:${s * BM_CELL}px" title="${esc(en.nome)}">
       <span class="bm-tk-img" style="width:${s * BM_CELL - 8}px;height:${s * BM_CELL - 8}px;${ret ? `background-image:url('${esc(ret)}')` : ''}">${ret ? '' : esc((en.nome || '?')[0].toUpperCase())}</span>
       ${i.abalado ? '<i class="bm-tk-ab" title="Abalado">💫</i>' : ''}${i.feridas ? `<i class="bm-tk-fer" title="Ferimentos">${i.feridas}</i>` : ''}${en.carta ? `<i class="bm-tk-carta ${en.carta.cor}">${en.carta.curinga ? '★' : esc(en.carta.v)}</i>` : ''}
+      ${i.conds.length ? `<span class="bm-tk-conds" title="${esc(i.conds.map(k => CONDICOES[k]?.nome || k).join(', '))}">${i.conds.slice(0, 4).map(k => CONDICOES[k]?.ico || '•').join('')}</span>` : ''}
       <span class="bm-tk-nome">${esc(en.nome.split(' ')[0])}</span></div>`;
   }).join('');
+  if (bmArr && bmArr.tipo === 'tk' && bmArr.moveu) bmMostrarArraste();
   /* alcance de movimento do selecionado */
   const al = $('.bm-alcance', bmNode); const selEn = ents.find(x => x.id === S.cbSel);
   if (selEn && bmFerr === 'mover' && cbPode(selEn)) {
@@ -4697,9 +4813,10 @@ function bmRender() {
   bmClima(amb.clima || '');
   /* lista de modelos */
   const mods = Object.entries(cb.modelos || {});
-  $('.bm-info', bmNode).innerHTML = mods.length ? `<div class="bm-mods"><span class="lbl">Áreas no mapa</span>${mods.map(([id, md]) => { const al2 = alvosDoModelo(md); return `<div class="bm-mod-l"><b>${MODELOS_AREA[md.tipo].nome}</b><span>${al2.length ? al2.map(x => esc(x.nome)).join(', ') : 'ninguém dentro'}</span>${S.gm && al2.length ? `<button class="btn sm perigo" data-bm="modDano" data-id="${id}">Dano em área</button>` : ''}${S.gm || md.autor === S.user.uname ? `<button class="btn ico sm fant" data-bm="modTirar" data-id="${id}" aria-label="Remover área">${ICO.x}</button>` : ''}</div>`; }).join('')}</div>` : '';
+  const ambDica = [luzA[0] ? 'Luz: a penalidade entra sozinha em ataques e em Perceber (Visão no Escuro ignora Penumbra e Escuridão).' : '', climaA.dica || ''].filter(Boolean);
+  $('.bm-info', bmNode).innerHTML = (ambDica.length ? `<p class="dica bm-amb-dica">${ambDica.map(esc).join(' ')}</p>` : '') + (mods.length ? `<div class="bm-mods"><span class="lbl">Áreas no mapa</span>${mods.map(([id, md]) => { const al2 = alvosDoModelo(md); return `<div class="bm-mod-l"><b>${MODELOS_AREA[md.tipo].nome}</b><span>${al2.length ? al2.map(x => esc(x.nome)).join(', ') : 'ninguém dentro'}</span>${S.gm && al2.length ? `<button class="btn sm perigo" data-bm="modDano" data-id="${id}">Dano em área</button>` : ''}${S.gm || md.autor === S.user.uname ? `<button class="btn ico sm fant" data-bm="modTirar" data-id="${id}" aria-label="Remover área">${ICO.x}</button>` : ''}</div>`; }).join('')}</div>` : '');
   if (bmView.mapaRef !== ((m && m.ref) || 'vazio') && $('.bm-vp', bmNode).clientWidth) { bmView.mapaRef = (m && m.ref) || 'vazio'; bmEnquadrar(); }
-  bmAplicar();
+  bmAplicar(); bmDesenharPop();
 }
 function bmMostrarPing(p) {
   if (!bmNode || !bmNode.isConnected) return;

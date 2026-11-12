@@ -1014,6 +1014,37 @@ body.bm-fullscreen { overflow: hidden; }
 .co-bts .tb-benes { width: auto; flex: 0 0 auto; margin: 0; }
 .co-bts > .dica { margin: 0; }
 
+/* ---------- vantagens/complicações/poderes em modo lista ---------- */
+.modo-cartas { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 0 0 10px; }
+.modo-cartas .linkbtn { font-size: .85rem; }
+.clista { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.cl-it { border: 1px solid var(--linha); border-left: 4px solid var(--cc); border-radius: 8px; background: #fff; transition: box-shadow .15s, border-color .15s; }
+.cl-it:hover { border-color: var(--linha2); border-left-color: var(--cc); }
+.cl-it.aberto { box-shadow: 0 6px 16px -10px rgba(29, 27, 24, .45); }
+.cl-linha { display: flex; align-items: center; gap: 4px; padding-right: 6px; }
+.cl-cab { flex: 1; min-width: 0; display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: none; border: 0; text-align: left; cursor: pointer; color: var(--tinta); font: inherit; }
+.cl-sig { color: var(--cc); font-size: 1rem; width: 1.1em; text-align: center; flex-shrink: 0; }
+.cl-nome { font-weight: 700; white-space: nowrap; }
+.cl-selo { flex-shrink: 0; font: 600 .7rem var(--f-ui); text-transform: uppercase; letter-spacing: .06em; color: var(--cc); border: 1px solid currentColor; border-radius: 999px; padding: 0 .45rem; opacity: .85; }
+.cl-resumo { min-width: 0; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--mut); font-size: .88rem; }
+.cl-seta { margin-left: auto; color: var(--mut); transition: transform .2s var(--ease-ramp); }
+.cl-it.aberto .cl-seta { transform: rotate(180deg); }
+.cl-acoes { display: flex; gap: 4px; flex-shrink: 0; }
+.cl-acoes .btn.olho.ico { min-width: 34px; }
+.cl-corpo { padding: 0 12px 12px 36px; display: grid; gap: 6px; animation: clAbre .2s var(--ease-ramp); }
+@keyframes clAbre { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+.cl-corpo p { margin: 0; }
+.cl-tipo { font: 600 .74rem var(--f-ui); text-transform: uppercase; letter-spacing: .08em; color: var(--cc); }
+.cl-req { font-size: .9rem; color: var(--tinta2); }
+.cl-desc { font-size: 1rem; line-height: 1.5; }
+.cl-corpo .btn { justify-self: start; }
+@media (max-width: 560px) { .cl-resumo { display: none; } }
+.cat-req { display: block; font: 600 .78rem var(--f-ui); margin: 2px 0; }
+.cat-req.ok { color: #2f7a3a; } .cat-req.falta { color: var(--verm); }
+.cat-it.sem-req { opacity: .72; }
+.cat-topo .chk { white-space: nowrap; font-size: .9rem; }
+.cl-auto { font-size: .85rem; color: #2f5d8a; background: #eef3f9; border-radius: 6px; padding: 4px 8px; justify-self: start; }
+
 </style>
 </head>
 <body data-view="carregando">
@@ -2656,7 +2687,10 @@ function resumoTeste(res) {
 }
 function nivelTeste(res) { return res.critico ? 'critico' : !res.sucesso ? 'falha' : res.amp ? 'ampliacao' : 'sucesso'; }
 async function rolarTeste(cfg) {
-  const res = Dado.teste(cfg);
+  /* com Bene ou rerrolagem grátis, fica o melhor dos dois resultados (regra do livro) */
+  const novo = Dado.teste(cfg); const ant = cfg.anterior;
+  const res = ant && ant.final > novo.final ? ant : novo;
+  if (ant) cfg = { ...cfg, notas: [...(cfg._notasBase || cfg.notas || []), ...(cfg._notasExtra || []), res === ant ? `nova rolagem ${novo.final}: ficou a anterior (${ant.final})` : `anterior ${ant.final}: ficou a nova`] };
   const entrada = {
     tipo: 'teste', ts: Date.now(), autor: S.user.uname, personagem: cfg.personagem || '', fichaId: cfg.fichaId || null,
     titulo: cfg.titulo, dado: res.dado, rotDado: rotDado(cfg.dado, cfg.bonus) + (cfg.inexperiente ? '−2' : ''),
@@ -2665,7 +2699,7 @@ async function rolarTeste(cfg) {
     nota: (cfg.notas || []).filter(Boolean).join(' · '), secreto: !!cfg.secreto,
   };
   await registrarRolagem(entrada);
-  mostrarResultado(entrada, cfg);
+  mostrarResultado(entrada, cfg, res);
   return { res, entrada };
 }
 async function rolarExpressao(titulo, expr, ctx = {}, extra = {}) {
@@ -2681,7 +2715,7 @@ async function registrarRolagem(e) {
   await D.set(cpath('rolagens/' + id), e).catch(() => { });
 }
 let resTimer = null;
-function mostrarResultado(e, cfg) {
+function mostrarResultado(e, cfg, resObj) {
   let box = $('#resultado'); if (!box) return;
   const f = cfg && cfg.fichaId ? S.fichas.find(x => x.id === cfg.fichaId) : null;
   const npc = cfg && cfg.npcId ? S.npcs.find(x => x.id === cfg.npcId) : null;
@@ -2693,8 +2727,11 @@ function mostrarResultado(e, cfg) {
     <div class="res-num mono">${esc(e.final)}</div>
     <div class="res-txt">${e.tipo === 'teste' ? esc(e.resumo) : 'Total'}</div>
     <div class="res-det">${rolagemHtml(e).replace(/^<li[^>]*>|<\/li>$/g, '')}</div>
+    ${cfg && cfg.gratis && !cfg._gratisUsado && e.tipo === 'teste' && !e.critico ? `<button class="btn sec sm largo" data-a="rerolarGratis">↻ Rerrolagem grátis (${esc(cfg.gratis)})</button>` : ''}
     ${podeBene ? `<button class="btn benny sm largo" data-a="rerolarBene">${ICO.benny} Gastar Bene e rolar de novo (${f ? f.bennies : benesNpc})</button>` : ''}
   </div>`;
+  const base = cfg ? { ...cfg, mod: cfg._modBase != null ? cfg._modBase : cfg.mod, _modBase: cfg._modBase != null ? cfg._modBase : cfg.mod, _notasBase: cfg._notasBase || cfg.notas || [], titulo: (cfg.titulo || '').replace(/ \((Bene|rerrolagem)\)$/, ''), anterior: resObj } : null;
+  A.rerolarGratis = () => { if (!base) return; rolarTeste({ ...base, _notasExtra: [], _gratisUsado: true, titulo: base.titulo + ' (rerrolagem)' }); };
   box.classList.remove('sai'); void box.offsetWidth; box.classList.add('on');
   A.rerolarBene = async () => {
     if (npc) {
@@ -2702,12 +2739,12 @@ function mostrarResultado(e, cfg) {
       if ((n.bennies || 0) > 0) await D.update(cpath('npcs/' + n.id), { bennies: n.bennies - 1 });
       else if ((S.camp.benesMestre || 0) > 0) await D.update(cpath(), { benesMestre: S.camp.benesMestre - 1 });
       else return;
-      return rolarTeste({ ...cfg, titulo: cfg.titulo.replace(/ \(Bene\)$/, '') + ' (Bene)' });
+      return rolarTeste({ ...base, titulo: base.titulo + ' (Bene)' });
     }
     const ff = S.fichas.find(x => x.id === cfg.fichaId); if (!ff || (ff.bennies || 0) < 1) return;
     await salvarFichaCampo(ff, { bennies: (ff.bennies || 0) - 1 });
     const extra = (ff.vantagens || []).some(v => nomeLivro(v.nome) === 'Impulso') ? 2 : 0;
-    rolarTeste({ ...cfg, mod: (cfg.mod || 0) + extra, titulo: cfg.titulo.replace(/ \(Bene\)$/, '') + ' (Bene)', notas: [...(cfg.notas || []), extra ? 'Impulso +2' : ''] });
+    rolarTeste({ ...base, mod: (base.mod || 0) + extra, titulo: base.titulo + ' (Bene)', _notasExtra: extra ? ['Impulso +2'] : [] });
   };
   clearTimeout(resTimer);
   resTimer = setTimeout(() => A.fecharRes(), 9000);
@@ -2845,6 +2882,41 @@ function racaDaFicha(f) {
   return r || null;
 }
 const passoDado = (d, n) => DADOS[clamp(DADOS.indexOf(d) + n, 0, DADOS.length - 1)] || d;
+/* ---------- automação de vantagens em ataques e dano ---------- */
+const ehDesarmado = a => !!a && (/desarmad|punho|soco|chute|m[aã]os nuas|briga|pancada/i.test(a.nome || '') || /^for$/i.test(String(a.dano || '').trim()));
+const vantItens = (f, ...nomes) => (f.vantagens || []).filter(v => nomes.includes(nomeLivro(v.nome)));
+/* Arma Predileta vale para a arma citada na nota da vantagem (ou no nome, entre parênteses); sem nota e com uma só arma, vale para ela */
+function armaPredileta(f, a) {
+  const ap = vantItens(f, 'Arma Predileta', 'Arma Predileta Aprimorada'); if (!ap.length || !a) return 0;
+  const nm = String(a.nome || '').toLowerCase().trim(); const txts = ap.map(x => `${x.nota || ''} ${(x.nome || '').replace(/^[^(]*\(?/, '')}`.toLowerCase());
+  const temAlvo = ap.some(x => (x.nota || '').trim() || /\(/.test(x.nome || ''));
+  const casa = nm && txts.some(t => t.includes(nm) || t.split(/[,;/]| e /).map(z => z.replace(/[()]/g, '').trim()).filter(z => z.length > 2).some(z => nm.includes(z)));
+  if (!(casa || (!temAlvo && (f.armas || []).length === 1))) return 0;
+  return ap.some(x => nomeLivro(x.nome) === 'Arma Predileta Aprimorada') ? 2 : 1;
+}
+function bonusAtaquePc(f, a, per) {
+  const v = deriv(f).v; const atq = [];
+  const ap = armaPredileta(f, a); if (ap) atq.push([ap > 1 ? 'Arma Predileta Aprimorada' : 'Arma Predileta', ap]);
+  if (per === 'lutar' && ehDesarmado(a)) { if (v.has('Guerreiro Marcial')) atq.push(['Guerreiro Marcial', 2]); else if (v.has('Artista Marcial')) atq.push(['Artista Marcial', 1]); }
+  if (per === 'atirar' && v.has('Disparo Duplo')) atq.push(['Disparo Duplo', 1]);
+  return atq;
+}
+/* expressão de dano já com dados desarmados das vantagens, dado de ampliação (Mestre de Arma) e Disparo Duplo */
+function danoPc(f, a, per, amp) {
+  const v = deriv(f).v; const notas = [];
+  let expr = String((a && a.dano) || 'For').trim().replace(/^1-3d6$/, '3d6');
+  if (per === 'lutar' && ehDesarmado(a) && /^for$/i.test(expr)) {
+    const marc = v.has('Artista Marcial'), bri = v.has('Brigão'); let d = marc || bri ? (marc && bri ? 6 : 4) : 0;
+    if (d && v.has('Guerreiro Marcial')) d = passoDado(d, 1); if (d && v.has('Pugilista')) d = passoDado(d, 1);
+    if (d) { expr = 'For+d' + d; notas.push(`desarmado d${d} (${[marc && 'Artista Marcial', bri && 'Brigão'].filter(Boolean).join(' + ')})`); }
+  }
+  if (amp) {
+    let dd = 6; if (per === 'lutar') { if (v.has('Mestre das Armas')) dd = 10; else if (v.has('Mestre de Arma')) dd = 8; }
+    expr += '+d' + dd; notas.push('ampliação +d' + dd + (dd > 6 ? ' (Mestre de Arma)' : ''));
+  }
+  if (per === 'atirar' && v.has('Disparo Duplo')) { expr += '+1'; notas.push('Disparo Duplo +1'); }
+  return { expr, notas };
+}
 function deriv(f) {
   const v = new Set((f.vantagens || []).map(x => nomeLivro(x.nome)));
   const c = {}; (f.complicacoes || []).forEach(x => { c[nomeLivro(x.nome)] = x.grav || 'menor'; });
@@ -2911,12 +2983,18 @@ function montarTeste(f, tipo, k, extra = {}) {
     if (d.re.penPer[k]) { bon += d.re.penPer[k]; notas.push('raça ' + fmtMod(d.re.penPer[k])); }
     if (k === 'perceber' && extra.luz !== false) { const pl = penLuz(d.re); if (pl) { bon += pl; notas.push('iluminação ' + fmtMod(pl)); } }
   } else if (tipo === 'extra') { const pe = (f.perExtras || []).find(x => x.id === k); t = pe; nome = pe.nome; }
+  let gratis = null;
+  if (tipo === 'per') {
+    if (k === 'persuadir' && d.v.has('Carismático')) gratis = 'Carismático';
+    else if (k === 'provocar' && d.v.has('Humilhar')) gratis = 'Humilhar';
+    else if (k === 'atletismo' && d.v.has('Acrobata')) gratis = 'Acrobata · só acrobacia, equilíbrio e salto';
+  }
   if (d.pen) notas.push(`ferimentos/fadiga/condições ${fmtMod(d.pen)}`);
   const carta = cartaDoCombate('pc:' + f.id);
   if (carta && carta.curinga) { bon += 2; notas.push('Curinga +2'); }
   const mod = (extra.mod || 0) + d.pen + bon;
   if (extra.notas) notas.push(...extra.notas);
-  return { titulo: extra.titulo || nome, dado: t.d, bonus: t.b || 0, mod, selvagem: f.carta !== 'extra', inexperiente: inex, personagem: f.nome || 'Sem nome', fichaId: f.id, notas, alvo: extra.alvo || 4 };
+  return { titulo: extra.titulo || nome, dado: t.d, bonus: t.b || 0, mod, selvagem: f.carta !== 'extra', inexperiente: inex, personagem: f.nome || 'Sem nome', fichaId: f.id, notas, alvo: extra.alvo || 4, gratis: extra.semGratis ? null : gratis };
 }
 function modDaBarra(rotulos, f) {
   let multi = (S.multi || 0) * 2;
@@ -2966,8 +3044,72 @@ function cartaHtml(c, { mini = false, grande = false, rodape = '' } = {}) {
     </div>
   </div>`;
 }
+/* o que o app já aplica sozinho para cada vantagem/complicação (aparece na lista expandida) */
+const AUTO_VANT = {
+  'Prontidão': '+2 em Perceber nas rolagens.', 'Ameaçador': '+2 em Intimidar.', 'Curandeiro': '+2 em Curar.', 'Investigador': '+2 em Pesquisar.', 'Senhor Conserta Tudo': '+2 em Consertar.',
+  'Ladrão': '+1 em Ladinagem.', 'Mateiro': '+2 em Sobrevivência.', 'Atraente': '+1 em Performance e Persuadir.', 'Muito Atraente': '+2 em Performance e Persuadir.',
+  'Carismático': 'Botão de rerrolagem grátis em Persuadir.', 'Humilhar': 'Botão de rerrolagem grátis em Provocar.', 'Acrobata': 'Botão de rerrolagem grátis em Atletismo.',
+  'Impulso': '+2 ao rerrolar com Bene.', 'Corajoso': '+2 no Teste de Medo.', 'Reflexos de Combate': '+2 para sair de Abalado e Atordoado.',
+  'Sorte': '+1 Bene no início da sessão.', 'Sorte Grande': '+2 Benes no início da sessão.', 'Ligeiro': 'Movimentação +2 e dado de corrida maior.',
+  'Musculoso': 'Tamanho e Resistência +1.', 'Brigão': 'Resistência +1 e d4 no dano desarmado.', 'Pugilista': 'Resistência +1 e dano desarmado um dado maior.',
+  'Artista Marcial': '+1 no ataque desarmado e d4 de dano.', 'Guerreiro Marcial': '+2 no ataque desarmado e dano um dado maior.',
+  'Bloquear': 'Aparar +1 e −1 no Agrupar contra você.', 'Bloquear Aprimorado': 'Aparar +2 e −2 no Agrupar contra você.',
+  'Mestre de Arma': 'Aparar +1 e ampliação de Lutar com d8.', 'Mestre das Armas': 'Aparar +2 e ampliação de Lutar com d10.',
+  'Nervos de Aço': 'Ignora 1 nível de penalidade por ferimento.', 'Nervos de Aço Aprimorados': 'Ignora 2 níveis de penalidade por ferimento.',
+  'Duro na Queda': '4 ferimentos antes de Incapacitado.', 'Muito Duro na Queda': '5 ferimentos antes de Incapacitado.',
+  'Rápido': 'Cartas de ação 5 ou menos são trocadas sozinhas.', 'Focado': 'Saca uma carta extra e fica com a melhor.', 'Extremamente Focado': 'Saca duas cartas extras e fica com a melhor.',
+  'Esquiva': '−2 nos ataques à distância contra você.', 'Combatente Acrobata': '−1 nos ataques contra você.',
+  'Arma Predileta': '+1 no ataque com a arma escrita na nota da vantagem.', 'Arma Predileta Aprimorada': '+2 no ataque com a arma escrita na nota da vantagem.',
+  'Disparo Duplo': '+1 no ataque e no dano com Atirar.', 'Assassino': '+2 de dano contra alvo Vulnerável, Atordoado ou na Finalização.',
+  'Golpe Poderoso': 'Dano corpo a corpo dobrado com Curinga.', 'Tiro Mortal': 'Dano à distância dobrado com Curinga.',
+  'Matador de Gigantes': '+d6 de dano contra alvos 3 Tamanhos maiores.', 'Impiedoso': '+2 ao rerrolar dano com Bene.',
+};
+/* modo de exibição das vantagens, complicações e poderes: 'cartas' (padrão) ou 'lista' (compacta, expansível) */
+const modoCartas = () => lsGet('wc.modoCartas', 'cartas') === 'lista' ? 'lista' : 'cartas';
+A.modoCartas = el => { lsSet('wc.modoCartas', el.dataset.v === 'lista' ? 'lista' : 'cartas'); render(); };
+S.clAberto = S.clAberto || new Set();
+A.clToggle = el => { const k = el.dataset.ck; S.clAberto.has(k) ? S.clAberto.delete(k) : S.clAberto.add(k); render(); };
+A.clTodos = el => {
+  const f = fichaAtual(); if (!f) return; const src = S.edicao || f; const abrir = el.dataset.v === '1';
+  ['vantagens', 'complicacoes', 'poderes'].forEach(ch => (src[ch] || []).forEach((it, i) => { const k = `${f.id}:${ch}:${i}:${it.nome}`; abrir ? S.clAberto.add(k) : S.clAberto.delete(k); }));
+  render();
+};
+function seletorModoCartas() {
+  const m = modoCartas();
+  return `<div class="modo-cartas" role="group" aria-label="Como mostrar vantagens, complicações e poderes">
+    <div class="seg mini"><button class="seg-b ${m === 'cartas' ? 'on' : ''}" data-a="modoCartas" data-v="cartas" aria-pressed="${m === 'cartas'}">🂠 Cartas</button><button class="seg-b ${m === 'lista' ? 'on' : ''}" data-a="modoCartas" data-v="lista" aria-pressed="${m === 'lista'}">☰ Lista</button></div>
+    ${m === 'lista' ? `<button class="linkbtn" data-a="clTodos" data-v="1">expandir tudo</button><button class="linkbtn" data-a="clTodos" data-v="0">recolher tudo</button>` : ''}
+  </div>`;
+}
+function listaCartas(f, chave, ed, lista) {
+  return `<ul class="clista">${lista.map((it, i) => {
+    const c = cartaDe(chave, it, f); const ck = `${f.id}:${chave}:${i}:${it.nome}`; const ab = S.clAberto.has(ck);
+    const sig = c.tipo === 'complicacao' ? '⚠' : c.tipo === 'poder' ? '✦' : '★';
+    const acoes = ed ? `<button class="btn ico sm fant" data-a="edItemCarta" data-k="${chave}" data-i="${i}" title="Editar texto" aria-label="Editar ${esc(it.nome)}">${ICO.lapis}</button><button class="btn ico sm fant perigo-txt" data-a="edRemover" data-k="${chave}" data-i="${i}" title="Remover" aria-label="Remover ${esc(it.nome)}">${ICO.lixo}</button>`
+      : `<button class="btn olho ico sm" data-a="mostrarCarta" data-k="${chave}" data-i="${i}" title="Mostrar a carta à mesa" aria-label="Mostrar ${esc(it.nome)} à mesa">${ICO.olho}</button>${chave === 'poderes' && podeControlarFicha(f) ? `<button class="btn sm sec" data-a="ativarPoder" data-i="${i}">Ativar</button>` : ''}`;
+    return `<li class="cl-it c-${c.tipo} ${ab ? 'aberto' : ''}" style="--cc:${esc(c.cor)}">
+      <div class="cl-linha">
+        <button class="cl-cab" data-a="clToggle" data-ck="${esc(ck)}" aria-expanded="${ab}" title="${ab ? 'Recolher' : 'Ver a descrição completa'}">
+          <span class="cl-sig" aria-hidden="true">${sig}</span><span class="cl-nome">${esc(it.nome)}</span><span class="cl-selo">${esc(c.selo || '')}</span>
+          ${ab ? '' : `<span class="cl-resumo">${esc(c.desc.length > 70 ? c.desc.slice(0, 68) + '…' : c.desc)}</span>`}<span class="cl-seta" aria-hidden="true">▾</span>
+        </button>
+        <span class="cl-acoes">${acoes}</span>
+      </div>
+      ${ab ? `<div class="cl-corpo">
+        <p class="cl-tipo">${esc(c.linha)}</p>
+        ${c.req ? `<p class="cl-req"><b>Requisitos:</b> ${esc(c.req)}</p>` : ''}
+        ${c.meta ? `<p class="carta-meta">${c.meta.filter(m => m[1]).map(m => `<span><b>${esc(m[0])}</b> ${esc(m[1])}</span>`).join('')}</p>` : ''}
+        <p class="cl-desc">${esc(c.desc) || '<i>Sem descrição.</i>'}</p>
+        ${AUTO_VANT[nomeLivro(it.nome)] ? `<p class="cl-auto">⚙ No app: ${esc(AUTO_VANT[nomeLivro(it.nome)])}</p>` : ''}
+        ${c.nota ? `<p class="carta-nota">${esc(c.nota)}</p>` : ''}
+        ${!ed ? `<button class="btn fant sm" data-a="verCarta" data-k="${chave}" data-i="${i}">Ver como carta</button>` : ''}
+      </div>` : ''}
+    </li>`;
+  }).join('')}</ul>`;
+}
 function grupoCartas(f, chave, ed) {
   const lista = (ed ? S.edicao : f)[chave] || [];
+  if (lista.length && modoCartas() === 'lista') return listaCartas(f, chave, ed, lista);
   if (!lista.length) return `<p class="vazio">${chave === 'vantagens' ? 'Nenhuma vantagem.' : chave === 'complicacoes' ? 'Nenhuma complicação.' : 'Nenhum poder.'}${ed ? '' : ' Entre no modo de edição para adicionar.'}</p>`;
   return `<div class="cartas-grade">${lista.map((it, i) => {
     const c = cartaDe(chave, it, f);
@@ -3100,6 +3242,7 @@ function viewFicha(f) {
       <div class="est-bloco"><span class="lbl">Fadiga <small>(Fatigado −1, Exausto −2)</small></span><div class="pips">${pips('fadiga', 2, src.fadiga || 0, 'Fadiga')}</div></div>
       <div class="est-bloco"><span class="lbl">Abalado</span><button class="toggle ${src.abalado ? 'on' : ''}" data-a="abalado" ${dis} aria-pressed="${!!src.abalado}">${src.abalado ? 'Abalado' : 'Normal'}</button>
         ${src.abalado && pode ? `<button class="btn fant sm" data-a="recuperarAbalado">Rolar Espírito</button><button class="btn fant sm" data-a="fBeneAbalado" ${src.bennies ? '' : 'disabled'}>Bene: sair de Abalado</button>` : ''}</div>
+      ${pode ? `<div class="est-bloco"><span class="lbl">Testes rápidos</span><div class="bts-l"><button class="btn sm fant" data-a="testeMedo" title="Espírito${d.v.has('Corajoso') ? ' +2 (Corajoso)' : ''}">😱 Teste de Medo</button><button class="btn sm fant" data-a="testeVigor" title="Vigor contra veneno, doença, frio, calor…">💪 Resistir (Vigor)</button></div></div>` : ''}
       ${pode ? `<div class="est-bloco"><span class="lbl">Dano</span><div class="bts-l"><button class="btn sm perigo" data-a="fReceber">Receber dano</button><button class="btn sm benny" data-a="fAbsorver" ${src.bennies ? '' : 'disabled'}>${ICO.benny} Absorver</button></div></div>` : ''}
       ${src.arcano && (src.arcano.ppMax || src.poderes.length) ? `<div class="est-bloco"><span class="lbl">Pontos de Poder</span><div class="bennies">${pode ? `<button class="btn ico sm" data-a="pp" data-d="-1" aria-label="Gastar PP">${ICO.min}</button>` : ''}<span class="benny-n mono">${src.arcano.pp}<small>/${src.arcano.ppMax}</small></span>${pode ? `<button class="btn ico sm" data-a="pp" data-d="1" aria-label="Recuperar PP">${ICO.mais}</button>` : ''}</div></div>` : ''}
       <div class="est-bloco largo"><span class="lbl">Condições</span><div class="conds">${(src.condicoes || []).map(k => `<button class="cond on" data-a="condTirar" data-k="${k}" ${dis} title="${esc(CONDICOES[k]?.desc || '')} Clique para remover.">${CONDICOES[k]?.ico || ''} ${esc(CONDICOES[k]?.nome || k)} ✕</button>`).join('')}
@@ -3211,7 +3354,7 @@ function viewFicha(f) {
   return `<div class="ficha ${ed ? 'editando' : ''}">${cabec}${barra}
     <div class="ficha-cols">
       <div class="col-a">${derivadas}${status}${atrs}${pers}${equip}</div>
-      <div class="col-b">${secaoRaca(f, src, ed)}${secCartas('vantagens', 'Vantagens', 'Vantagem do livro')}${secCartas('complicacoes', 'Complicações', 'Complicação do livro')}${poderes}${evol}${notas}</div>
+      <div class="col-b">${secaoRaca(f, src, ed)}${seletorModoCartas()}${secCartas('vantagens', 'Vantagens', 'Vantagem do livro')}${secCartas('complicacoes', 'Complicações', 'Complicação do livro')}${poderes}${evol}${notas}</div>
     </div>
     ${ed ? `<div class="barra-salvar"><span>Mudanças ainda não salvas.</span><button class="btn fant" data-a="cancelarEdicao">Cancelar</button><button class="btn pri" data-a="salvarEdicao">Salvar edição</button></div>` : ''}
   </div>`;
@@ -3281,24 +3424,61 @@ A.edAddItem = el => {
 };
 
 /* catálogo para adicionar cartas */
-function abrirCatalogo(chave, aoEscolher, { titulo, filtro } = {}) {
-  let busca = '', cat = '';
+/* ---------- requisitos de vantagens: confere posto, Carta Selvagem, atributos, perícias e outras vantagens ---------- */
+const POSTO_ORD = Object.fromEntries(POSTOS.map(([n], i) => [n, i]));
+function normTxt(t) { return String(t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim(); }
+function dadoDeTrait(f, nome) {
+  const n = normTxt(nome);
+  const a = ATRIBUTOS.find(([, an]) => normTxt(an) === n); if (a) return { v: traitVal(f.atr[a[0]]), ok: true };
+  const p = PERICIAS.find(([, pn]) => normTxt(pn) === n || normTxt(pn).startsWith(n)); if (p) return { v: f.per[p[0]] ? traitVal(f.per[p[0]]) : 0, ok: true };
+  const px = (f.perExtras || []).find(x => normTxt(x.nome).startsWith(n)); if (px) return { v: traitVal(px), ok: true };
+  return { v: 0, ok: false };
+}
+function checarReq(f, req) {
+  const falta = [], duvida = []; if (!f || !req) return { ok: true, falta, duvida };
+  const nAv = (f.avancos || []).length; const posto = postoDe(nAv);
+  const vs = new Set((f.vantagens || []).map(v => normTxt(nomeLivro(v.nome))));
+  String(req).split(',').map(x => x.trim()).filter(Boolean).forEach(parte => {
+    if (POSTO_ORD[parte] != null) { if (POSTO_ORD[posto] < POSTO_ORD[parte]) falta.push(parte); return; }
+    if (/^carta selvagem$/i.test(parte)) { if (f.carta === 'extra') falta.push('Carta Selvagem'); return; }
+    const m = parte.match(/^(.+?)\s+d(4|6|8|10|12)$/i);
+    if (m) {
+      const alts = m[1].split(/\s+ou\s+/i); const alvo = +m[2] + 0;
+      const res = alts.map(x => dadoDeTrait(f, x));
+      if (!res.some(r => r.ok)) { duvida.push(parte); return; }
+      if (!res.some(r => r.ok && r.v >= alvo)) falta.push(parte);
+      return;
+    }
+    if (vs.has(normTxt(parte))) return;
+    if (VANTAGENS.some(v => normTxt(v[0]) === normTxt(parte))) { falta.push(parte); return; }
+    duvida.push(parte);
+  });
+  return { ok: !falta.length, falta, duvida };
+}
+function abrirCatalogo(chave, aoEscolher, { titulo, filtro, ficha } = {}) {
+  let busca = '', cat = '', soOk = false;
   const fonte = chave === 'vantagens' ? VANTAGENS : chave === 'complicacoes' ? COMPLICACOES : PODERES;
   const desenhar = () => {
     const q = busca.toLowerCase();
-    const l = fonte.map((x, i) => [x, i]).filter(([x]) => (!q || (x[0] + ' ' + (x[3] || x[2] || x[4])).toLowerCase().includes(q)) && (!cat || x[1] === cat) && (!filtro || filtro(x)));
+    const l = fonte.map((x, i) => [x, i]).filter(([x]) => (!q || (x[0] + ' ' + (x[3] || x[2] || x[4])).toLowerCase().includes(q)) && (!cat || x[1] === cat) && (!filtro || filtro(x)) && (!soOk || checarReq(ficha, x[2]).ok));
     $('#catLista').innerHTML = l.map(([x, i]) => {
-      if (chave === 'vantagens') return `<button class="cat-it" data-ci="${i}" style="--cc:${CAT_VANT[x[1]].cor}"><b>${esc(x[0])}</b><small class="cat-tag">${CAT_VANT[x[1]].nome} · ${esc(x[2])}</small><span>${esc(x[3])}</span></button>`;
+      if (chave === 'vantagens') { const rq = ficha ? checarReq(ficha, x[2]) : null; return `<button class="cat-it ${rq && !rq.ok ? 'sem-req' : ''}" data-ci="${i}" style="--cc:${CAT_VANT[x[1]].cor}"><b>${esc(x[0])}</b><small class="cat-tag">${CAT_VANT[x[1]].nome} · ${esc(x[2])}</small>${rq ? `<small class="cat-req ${rq.ok ? 'ok' : 'falta'}">${rq.ok ? (rq.duvida.length ? '✓ requisitos (confira: ' + esc(rq.duvida.join(', ')) + ')' : '✓ cumpre os requisitos') : '✕ falta: ' + esc(rq.falta.join(', '))}</small>` : ''}<span>${esc(x[3])}</span></button>`; }
       if (chave === 'complicacoes') return `<button class="cat-it" data-ci="${i}" style="--cc:#a3222c"><b>${esc(x[0])}</b><small class="cat-tag">${esc(x[1])}</small><span>${esc(x[2])}</span></button>`;
       return `<button class="cat-it" data-ci="${i}" style="--cc:#5b3f8c"><b>${esc(x[0])}</b><small class="cat-tag">${esc(x[5] || '')} · ${esc(x[1])} PP · ${esc(x[2])} · ${esc(x[3])}</small><span>${esc(x[4])}</span></button>`;
     }).join('') || '<p class="vazio">Nada encontrado.</p>';
   };
   abrirModal(`<div class="cat-topo"><input class="inp" id="catBusca" placeholder="Buscar pelo nome ou efeito" autofocus aria-label="Buscar">
-    ${chave === 'vantagens' ? `<select class="inp" id="catCat" aria-label="Categoria"><option value="">Todas as categorias</option>${Object.entries(CAT_VANT).map(([k, c]) => `<option value="${k}">${c.nome}</option>`).join('')}</select>` : ''}</div>
+    ${chave === 'vantagens' ? `<select class="inp" id="catCat" aria-label="Categoria"><option value="">Todas as categorias</option>${Object.entries(CAT_VANT).map(([k, c]) => `<option value="${k}">${c.nome}</option>`).join('')}</select>` : ''}
+    ${chave === 'vantagens' && ficha ? `<label class="chk"><input type="checkbox" id="catOk" ${soOk ? 'checked' : ''}> Só as que ${esc(ficha.nome || 'o personagem')} pode pegar</label>` : ''}</div>
     <div class="cat-lista" id="catLista" data-scroll="cat"></div>`, { titulo: titulo || 'Catálogo', cls: 'largo' });
   $('#catBusca').oninput = e => { busca = e.target.value; desenhar(); };
   if ($('#catCat')) $('#catCat').onchange = e => { cat = e.target.value; desenhar(); };
-  $('#catLista').onclick = ev => { const b = ev.target.closest('[data-ci]'); if (!b) return; aoEscolher(fonte[+b.dataset.ci]); };
+  if ($('#catOk')) $('#catOk').onchange = e => { soOk = e.target.checked; desenhar(); };
+  $('#catLista').onclick = async ev => {
+    const b = ev.target.closest('[data-ci]'); if (!b) return; const x = fonte[+b.dataset.ci];
+    if (chave === 'vantagens' && ficha) { const rq = checarReq(ficha, x[2]); if (!rq.ok) { const ok = await confirmar(`<b>${esc(x[0])}</b> pede: ${esc(rq.falta.join(', '))}. Adicionar mesmo assim (com o aval do mestre)?`, 'Adicionar', false); if (!ok) return; if (!$('#catLista')) return abrirCatalogo(chave, aoEscolher, { titulo, filtro, ficha }); } }
+    aoEscolher(x);
+  };
   desenhar();
 }
 function itemDoCatalogo(chave, x, gravEscolhida) {
@@ -3319,7 +3499,7 @@ A.edAddCarta = el => {
     let g = null;
     if (k === 'complicacoes' && x[1] === 'menor/maior') { g = await escolherGravidade(x[0]); if (!g) return; }
     S.edicao[k].push(itemDoCatalogo(k, x, g)); fecharModal(); render(); toast(`<b>${esc(x[0])}</b> adicionada à ficha. Salve a edição para confirmar.`);
-  }, { titulo: k === 'vantagens' ? 'Vantagens' : k === 'complicacoes' ? 'Complicações' : 'Poderes' });
+  }, { titulo: k === 'vantagens' ? 'Vantagens' : k === 'complicacoes' ? 'Complicações' : 'Poderes', ficha: normFicha(S.edicao) });
 };
 A.edAddCartaLivre = el => {
   const k = el.dataset.k;
@@ -3362,6 +3542,8 @@ A.pip = el => {
   const v = (f[k] || 0) >= i ? i - 1 : i;
   salvarFichaCampo(f, { [k]: v });
 };
+A.testeMedo = () => { const f = fU(); if (!f) return; const c = deriv(f).v.has('Corajoso'); rolarDaFicha(f, 'atr', 'esp', { titulo: 'Teste de Medo', mod: c ? 2 : 0, notas: c ? ['Corajoso +2'] : [] }); };
+A.testeVigor = () => { const f = fU(); if (!f) return; rolarDaFicha(f, 'atr', 'vig', { titulo: 'Resistir (Vigor)' }); };
 A.abalado = () => { const f = fU(); if (f) salvarFichaCampo(f, { abalado: !f.abalado }); };
 A.recuperarAbalado = async () => {
   const f = fU(); if (!f) return;
@@ -3378,15 +3560,14 @@ A.atacar = el => {
   const f = fU(); if (!f) return; const a = f.armas[+el.dataset.i]; const per = a.pericia || (a.alcance ? 'atirar' : 'lutar');
   const en = cbEntradas(true).find(x => x.e.ref === 'pc:' + f.id);
   if (en) return A.atqAbrir({ dataset: { id: en.id, i: el.dataset.i } });
-  rolarDaFicha(f, 'per', per, { titulo: `Ataque: ${a.nome}` });
+  const bon = bonusAtaquePc(f, a, per);
+  rolarDaFicha(f, 'per', per, { titulo: `Ataque: ${a.nome}`, mod: bon.reduce((x, b) => x + b[1], 0), notas: bon.map(b => `${b[0]} ${fmtMod(b[1])}`) });
 };
 A.dano = el => {
   const f = fU(); if (!f) return; const a = f.armas[+el.dataset.i];
-  let expr = String(a.dano || 'For').replace(/^For/i, 'For');
-  if (expr === '—') { toast('Essa arma não causa dano direto.'); return; }
-  expr = expr.replace(/^1-3d6$/, '3d6');
-  const notas = [];
-  if (el.dataset.amp) { expr += '+d6'; notas.push('ampliação +d6'); }
+  if (String(a.dano || '').trim() === '—') { toast('Essa arma não causa dano direto.'); return; }
+  const per = a.pericia || (a.alcance ? 'atirar' : 'lutar');
+  let { expr, notas } = danoPc(f, a, per, !!el.dataset.amp);
   const carta = cartaDoCombate('pc:' + f.id); if (carta && carta.curinga) { expr += '+2'; notas.push('Curinga +2'); }
   if (+a.pa) notas.push('PA ' + a.pa);
   rolarExpressao(`Dano: ${a.nome}`, expr, { for: f.atr.for }, { personagem: f.nome, fichaId: f.id, nota: notas.join(' · ') }).catch(e => toast(esc(e.message), 'err'));
@@ -3437,7 +3618,7 @@ A.evoluir = () => {
       abrirCatalogo('vantagens', x => {
         const nv = itemDoCatalogo('vantagens', x);
         registrar({ vantagens: [...f.vantagens, nv] }, 'vantagem', 'Nova vantagem: ' + x[0], { vantagens: f.vantagens });
-      }, { titulo: 'Escolha a nova vantagem', filtro: x => !f.vantagens.some(v => v.nome === x[0]) });
+      }, { titulo: 'Escolha a nova vantagem', filtro: x => !f.vantagens.some(v => v.nome === x[0]), ficha: f });
     } else if (t === 'atributo') {
       P.innerHTML = `<div class="av-esc">${ATRIBUTOS.map(([k, n]) => { const a = f.atr[k]; const nx = a.d < 12 ? T(a.d + 2) : T(12, (a.b || 0) + 1); return `<button class="btn sec" data-k="${k}">${n} ${traitTxt(a)} → ${traitTxt(nx)}</button>`; }).join('')}</div>`;
       P.onclick = e => { const x = e.target.closest('[data-k]'); if (!x) return; const k = x.dataset.k; const a = f.atr[k]; const nx = a.d < 12 ? T(a.d + 2) : T(12, (a.b || 0) + 1); registrar({ atr: { ...f.atr, [k]: nx } }, 'atributo', `${ATR_NOME[k]} ${traitTxt(a)} → ${traitTxt(nx)}`, { atr: f.atr }); };
@@ -3618,7 +3799,7 @@ A.wzAddCarta = el => {
     S.wiz.f[k].push(itemDoCatalogo(k, x, g));
     if (x[0] === 'Antecedente Arcano' && !S.wiz.f.arcano.ppMax) { S.wiz.f.arcano.ppMax = 10; S.wiz.f.arcano.pp = 10; }
     fecharModal(); render();
-  }, { titulo: k === 'vantagens' ? 'Vantagens (Novato)' : k === 'complicacoes' ? 'Complicações' : 'Poderes', filtro: k === 'vantagens' ? x => /^Novato/.test(x[2]) && !S.wiz.f.vantagens.some(v => v.nome === x[0]) : k === 'complicacoes' ? x => !S.wiz.f.complicacoes.some(c => c.nome === x[0]) : x => (x[5] || 'Novato') === 'Novato' && !S.wiz.f.poderes.some(p => p.nome === x[0]) });
+  }, { titulo: k === 'vantagens' ? 'Vantagens (Novato)' : k === 'complicacoes' ? 'Complicações' : 'Poderes', ficha: k === 'vantagens' ? S.wiz.f : null, filtro: k === 'vantagens' ? x => !/(Experiente|Veterano|Heroico|Lendário)/.test(x[2]) && !S.wiz.f.vantagens.some(v => v.nome === x[0]) : k === 'complicacoes' ? x => !S.wiz.f.complicacoes.some(c => c.nome === x[0]) : x => (x[5] || 'Novato') === 'Novato' && !S.wiz.f.poderes.some(p => p.nome === x[0]) });
 };
 A.wzTirar = el => { S.wiz.f[el.dataset.k].splice(+el.dataset.i, 1); render(); };
 A.wzArte = async el => { const it = S.wiz.f[el.dataset.k][+el.dataset.i]; const r = await ajustarImagem(it.arte, { proporcao: '4/3', titulo: 'Arte: ' + it.nome, max: 900 }); if (r !== undefined) it.arte = r; render(); };
@@ -4138,6 +4319,8 @@ A.atqAbrir = el => {
   const alvos = cbEntradas().filter(x => x.id !== at.id && !cbFora(x));
   const st = { alvo: (alvos.find(x => x.lado !== at.lado) || alvos[0] || {}).id || '', cobertura: 0, selvagem: false, mirar: false, livre: 0, faixa: null, agrupar: null, fase: 'ataque', res: null, dano: null, calc: null };
   const infoAt = cbInfo(at);
+  const armaPc = at.tipo === 'pc' && +el.dataset.i >= 0 ? at.ficha.armas[+el.dataset.i] : null;
+  const bonusPc = armaPc ? bonusAtaquePc(at.ficha, armaPc, arma.per) : [];
   const desenhar = () => {
     const alvo = alvos.find(x => x.id === st.alvo); const iA = alvo ? cbInfo(alvo) : null;
     const dist = alvo && bmTemPosicoes(at.id, alvo.id) ? bmDist(at.id, alvo.id) : null;
@@ -4158,9 +4341,10 @@ A.atqAbrir = el => {
         if (st.mirar) mods.push(['Mirar', 2]);
       }
       if (iA.v && iA.v.has('Combatente Acrobata')) mods.push(['Alvo Combatente Acrobata', -1]);
-      if (iA.conds.includes('atordoado') || iA.conds.includes('amarrado')) mods.push(['Finalização (alvo indefeso)', 4]);
-      else if (iA.conds.includes('vulneravel')) mods.push(['Alvo Vulnerável', 2]);
+      if (iA.conds.includes('amarrado')) mods.push(['Finalização (alvo amarrado/indefeso)', 4]);
+      else if (iA.conds.includes('vulneravel') || iA.conds.includes('atordoado')) mods.push([iA.conds.includes('atordoado') ? 'Alvo Atordoado (Vulnerável)' : 'Alvo Vulnerável', 2]);
     }
+    bonusPc.forEach(b => mods.push(b));
     if (st.cobertura) mods.push(['Cobertura', st.cobertura]);
     const pl = penLuz({ visao: infoAt.visao }); if (pl) mods.push(['Iluminação', pl]);
     if (st.livre) mods.push(['Outros', st.livre]);
@@ -4187,9 +4371,11 @@ A.atqAbrir = el => {
       if (acertou && !st.dano) corpo += `<div class="modal-acoes"><button class="btn fant" data-a="fecharModal">Fechar</button><button class="btn pri" id="atqDano">Rolar dano${r.amp ? ' (+d6 da ampliação)' : ''}</button></div>`;
       else if (st.dano) {
         corpo += `<div class="atq-res dano"><b class="mono">${st.dano.total}</b><span>de dano${arma.pa ? ` · PA ${arma.pa}` : ''}</span></div>`;
+        const beneDano = !st.danoBene && benesDe(at) ? `<button class="btn benny" id="atqDanoBene">${ICO.benny} Bene: rolar dano de novo${at.tipo === 'pc' && deriv(at.ficha).v.has('Impiedoso') ? ' (+2 Impiedoso)' : ''}</button>` : '';
+        if (st.danoNotas && st.danoNotas.length) corpo += `<p class="dica">${esc(st.danoNotas.join(' · '))}</p>`;
         if (alvo && st.calc) corpo += `<div class="rd-res"><b>${esc(st.calc.txt)}</b><small>${verTn ? `contra Resistência ${st.calc.res}` : ''}</small></div>
-          <div class="modal-acoes"><button class="btn fant" data-a="fecharModal">Fechar</button><button class="btn perigo" id="atqAplicar">Aplicar em ${esc(alvo.nome)}</button></div>`;
-        else corpo += `<div class="modal-acoes"><button class="btn fant" data-a="fecharModal">Fechar</button></div>`;
+          <div class="modal-acoes">${beneDano}<button class="btn fant" data-a="fecharModal">Fechar</button><button class="btn perigo" id="atqAplicar">Aplicar em ${esc(alvo.nome)}</button></div>`;
+        else corpo += `<div class="modal-acoes">${beneDano}<button class="btn fant" data-a="fecharModal">Fechar</button></div>`;
       } else corpo += `<div class="modal-acoes">${!r.critico && benesDe(at) ? `<button class="btn benny" id="atqBene">${ICO.benny} Gastar Bene e rolar de novo</button>` : ''}<button class="btn fant" data-a="fecharModal">Fechar</button></div>`;
     }
     $('#atqCorpo').innerHTML = corpo;
@@ -4204,6 +4390,7 @@ A.atqAbrir = el => {
     const bd = $('#atqDano'); if (bd) bd.onclick = () => rolarDanoAtq();
     const ba = $('#atqAplicar'); if (ba) ba.onclick = async () => { await aplicarDano(alvo, st.calc, at.nome + ' · ' + arma.nome); fecharModal(); toast(`${esc(alvo.nome)}: ${esc(st.calc.txt)}`, st.calc.fer ? 'err' : ''); };
     const bb = $('#atqBene'); if (bb) bb.onclick = async () => { if (await gastarBeneDe(at)) rolarAtq(true); };
+    const bdb = $('#atqDanoBene'); if (bdb) bdb.onclick = async () => { if (await gastarBeneDe(at)) rolarDanoAtq(true); };
   };
   const rolarAtq = async (reroll = false) => {
     const alvo = alvos.find(x => x.id === st.alvo);
@@ -4222,25 +4409,40 @@ A.atqAbrir = el => {
     } else {
       r = await rolarTeste({ titulo, dado: 6, bonus: 0, mod: st._soma, selvagem: false, personagem: at.nome, notas, alvo: st._tn, semBene: true, secreto: true });
     }
-    st.res = r.res; st.fase = 'res'; st.dano = null; st.calc = null;
+    if (reroll && st.res && st.res.final > r.res.final) { toast(`Nova rolagem ${r.res.final}: fica a anterior (${st.res.final}), a melhor das duas.`); }
+    else st.res = r.res;
+    st.fase = 'res'; st.dano = null; st.calc = null; st.danoBene = false;
     if (st.selvagem && !reroll) { const c = cbInfo(at).conds; if (!c.includes('vulneravel')) await cbPatchEnt(at, { condicoes: [...c, 'vulneravel'] }); }
     desenhar();
   };
-  const rolarDanoAtq = async () => {
+  const rolarDanoAtq = async (reroll = false) => {
     const alvo = alvos.find(x => x.id === st.alvo);
-    let expr = String(arma.dano || '2d6'); if (expr === '—') expr = '0';
-    expr = expr.replace(/^1-3d6$/, '3d6');
-    const notas = [];
-    if (st.res.amp) { expr += '+d6'; notas.push('ampliação +d6'); }
+    let expr, notas;
+    if (armaPc) { const dp = danoPc(at.ficha, armaPc, arma.per, !!st.res.amp); expr = dp.expr; notas = dp.notas; if (String(armaPc.dano || '').trim() === '—') expr = '0'; }
+    else {
+      expr = String(arma.dano || '2d6'); if (expr === '—') expr = '0';
+      expr = expr.replace(/^1-3d6$/, '3d6'); notas = [];
+      if (st.res.amp) { expr += '+d6'; notas.push('ampliação +d6'); }
+    }
     if (st.selvagem) { expr += '+2'; notas.push('Ataque Selvagem +2'); }
-    const fin = alvo && (cbInfo(alvo).conds.includes('atordoado') || cbInfo(alvo).conds.includes('amarrado'));
+    const fin = alvo && cbInfo(alvo).conds.includes('amarrado');
     if (fin) { expr += '+4'; notas.push('Finalização +4'); }
     const carta = at.carta; if (carta && carta.curinga) { expr += '+2'; notas.push('Curinga +2'); }
-    if (at.tipo === 'pc') { const v = deriv(at.ficha).v; if (v.has('Assassino') && (fin || (alvo && cbInfo(alvo).conds.includes('vulneravel')))) { expr += '+2'; notas.push('Assassino +2'); } }
+    let dobra = null;
+    if (at.tipo === 'pc') {
+      const v = deriv(at.ficha).v; const cA = alvo ? cbInfo(alvo).conds : [];
+      if (v.has('Assassino') && (fin || cA.includes('vulneravel') || cA.includes('atordoado'))) { expr += '+2'; notas.push('Assassino +2'); }
+      if (alvo && v.has('Matador de Gigantes') && (cbInfo(alvo).tam || 0) >= (infoAt.tam || 0) + 3) { expr += '+d6'; notas.push('Matador de Gigantes +d6'); }
+      if (reroll && v.has('Impiedoso')) { expr += '+2'; notas.push('Impiedoso +2'); }
+      if (carta && carta.curinga && !reroll) { if (!arma.distancia && v.has('Golpe Poderoso')) dobra = 'Golpe Poderoso'; else if (arma.distancia && v.has('Tiro Mortal')) dobra = 'Tiro Mortal'; }
+    }
     const forca = at.tipo === 'pc' ? at.ficha.atr.for : T(+((at.ficha && at.ficha.atr && at.ficha.atr.for) || 6));
     try {
       const r = await rolarExpressao('Dano: ' + arma.nome, expr, { for: forca }, { personagem: at.nome, fichaId: at.tipo === 'pc' ? at.ficha.id : null, nota: [alvo ? 'em ' + alvo.nome : '', ...notas, arma.pa ? 'PA ' + arma.pa : ''].filter(Boolean).join(' · '), secreto: at.tipo !== 'pc' && (!!at.e.oculto || npcSecreto()) });
-      st.dano = r; st.calc = alvo ? calcDano(cbInfo(alvo), r.total, arma.pa) : null;
+      let total = r.total;
+      if (dobra) { total *= 2; notas.push(`${dobra}: dano dobrado (${r.total} × 2)`); toast(`${dobra}: Curinga na mão, dano dobrado para <b>${total}</b>.`); }
+      if (reroll && st.dano && st.dano.total > total) { toast(`Novo dano ${total}: fica o anterior (${st.dano.total}).`); total = st.dano.total; }
+      st.dano = { ...r, total }; st.danoNotas = notas; st.danoBene = reroll; st.calc = alvo ? calcDano(cbInfo(alvo), total, arma.pa) : null;
       desenhar();
     } catch (e) { toast(esc(e.message), 'err'); }
   };

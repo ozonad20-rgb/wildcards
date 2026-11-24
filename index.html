@@ -1045,6 +1045,121 @@ body.bm-fullscreen { overflow: hidden; }
 .cat-topo .chk { white-space: nowrap; font-size: .9rem; }
 .cl-auto { font-size: .85rem; color: #2f5d8a; background: #eef3f9; border-radius: 6px; padding: 4px 8px; justify-self: start; }
 
+/* =====================================================================
+   v6 · interface: cabeçalho do mestre, cartões de ficha, escudo, celular
+   ===================================================================== */
+/* largura útil maior em telas grandes */
+.home, .pagina { max-width: 1440px; }
+.faixa-capa { max-width: 1440px; }
+
+/* cabeçalho da campanha (mestre): capa, nome, mesa e código numa só faixa */
+.gm-cab { display: grid; grid-template-columns: 240px minmax(0, 1fr) auto; gap: 20px; align-items: center; padding: 14px; background: var(--papel); border: 1px solid var(--linha2); border-radius: var(--raio); box-shadow: var(--sombra); }
+.gm-cab-capa { position: relative; padding: 0; border: 1px solid var(--linha2); border-radius: 10px; overflow: hidden; background: var(--papel2); cursor: pointer; }
+.gm-cab-capa .quadro.capa { aspect-ratio: 16/9; }
+.gm-cab-capa .capa-vazia { font-size: 1rem; gap: 6px; padding: 4px 10px; }
+.gm-cab-capa .ret-tag { opacity: 0; transition: opacity .15s; } .gm-cab-capa:hover .ret-tag, .gm-cab-capa:focus-visible .ret-tag { opacity: 1; }
+.gm-cab-info { display: grid; gap: 10px; min-width: 0; }
+.gm-cab-nome .inp { font: 400 1.9rem/1.1 var(--f-disp); letter-spacing: .03em; border-color: transparent; background: transparent; padding: 2px 6px; margin-left: -6px; min-height: 0; }
+.gm-cab-nome .inp:hover { border-color: var(--linha2); } .gm-cab-nome .inp:focus { background: #fff; border-color: var(--tinta2); }
+.gm-cab .membros { margin: 0; }
+.gm-cab-xp { justify-self: start; }
+.gm-cab-cod { display: grid; gap: 4px; justify-items: center; text-align: center; padding-left: 20px; border-left: 1px dashed var(--linha2); }
+.gm-cab-cod .codigo-grande { font-size: clamp(1.6rem, 2.6vw, 2.2rem); padding: 10px 16px; width: auto; }
+.gm-cab-cod .dica { margin: 0; }
+.gm-cols { grid-template-columns: minmax(340px, 420px) minmax(0, 1fr); }
+.gm-lado, .gm-main { display: grid; gap: 22px; align-content: start; min-width: 0; }
+
+/* fichas dos jogadores em cartões */
+.pc-grade { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; margin-top: 14px; }
+.pcc { display: grid; grid-template-rows: auto auto 1fr; gap: 10px; padding: 12px; background: #fff; border: 1px solid var(--linha); border-radius: 12px; transition: border-color .15s, box-shadow .2s var(--ease-ramp), transform .2s var(--ease-ramp); }
+.pcc:hover { border-color: var(--linha2); box-shadow: 0 10px 22px -16px rgba(29, 27, 24, .6); transform: translateY(-1px); }
+.pcc.ferido { box-shadow: inset 3px 0 0 var(--verm); }
+.pcc-abrir { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 12px; align-items: center; padding: 0; background: none; border: 0; text-align: left; color: inherit; font: inherit; cursor: pointer; border-radius: 8px; }
+.pcc-ret { width: 64px; border-radius: 10px; border: 1px solid var(--linha2); }
+.pcc-ret .ret-vazio { font-size: 1.4rem; }
+.pcc-txt { display: grid; gap: 2px; min-width: 0; }
+.pcc-txt b { font: 700 1.12rem/1.2 var(--f-idx); overflow-wrap: anywhere; }
+.pcc-abrir:hover b { color: var(--verm); }
+.pcc-conc { color: var(--mut); font-size: .9rem; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.pcc-conc.vazio-t { font-style: italic; opacity: .7; }
+.pcc-chips { display: flex; flex-wrap: wrap; gap: 5px; }
+.pcc-chips .chip { font-size: .8rem; padding: 1px 8px; }
+.pcc-pe { display: flex; align-items: end; gap: 8px; padding-top: 10px; border-top: 1px dashed var(--linha); align-self: end; }
+.pcc-dono { flex: 1; display: grid; gap: 3px; min-width: 0; }
+.pcc-dono .inp { min-height: 38px; padding: .3em .6em; }
+
+/* cartões do mestre e jogadores com menos ruído no celular */
+@media (max-width: 1100px) {
+  .gm-cab { grid-template-columns: 180px minmax(0, 1fr); }
+  .gm-cab-cod { grid-column: 1 / -1; border-left: 0; border-top: 1px dashed var(--linha2); padding: 12px 0 0; grid-template-columns: auto auto; justify-content: center; align-items: center; gap: 4px 14px; }
+  .gm-cab-cod .dica { grid-column: 1 / -1; }
+  .gm-cols { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 640px) {
+  .gm-cab { grid-template-columns: minmax(0, 1fr); }
+  .gm-cab-capa { max-height: 140px; }
+  .gm-cab-nome .inp { font-size: 1.5rem; }
+  .pc-grade { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* raça no modo lista */
+.raca-lista-hab { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.raca-lista-hab li { display: grid; gap: 1px; } .raca-lista-hab small { color: var(--mut); font-size: .88rem; }
+
+/* ---------- celular: abas embaixo, com alvo de toque grande ---------- */
+@media (max-width: 760px) {
+  body.em-camp { padding-bottom: 64px; }
+  .em-camp .topo { grid-template-columns: minmax(0, 1fr) auto; }
+  .em-camp .topo-meio { position: fixed; left: 0; right: 0; bottom: 0; z-index: 60; background: var(--tinta); border-top: 1px solid #3a352d; padding: 4px 6px calc(4px + env(safe-area-inset-bottom)); }
+  .em-camp .tabs { justify-content: space-around; gap: 2px; }
+  .em-camp .tab { flex: 1; font-size: .86rem; padding: .5em .3em; min-height: 52px; }
+  .em-camp .tab.on::after { bottom: 4px; }
+  body.em-camp #rolw { bottom: 76px; } body.em-camp #mesaPilha { bottom: 150px; }
+  .topo-escudo span { display: none; }
+}
+
+/* ---------- botão do escudo no topo ---------- */
+.topo-escudo { gap: 6px; font-weight: 600; min-height: 40px; padding: .35em .8em; }
+.topo-escudo[aria-expanded="true"] { background: var(--papel); color: var(--tinta); }
+
+/* ---------- Escudo do Mestre: gaveta que sobe ---------- */
+.escudo-fundo { position: fixed; inset: 0; z-index: 900; background: rgba(20, 18, 15, .28); opacity: 0; pointer-events: none; transition: opacity .3s ease; }
+.escudo-fundo.on { opacity: 1; pointer-events: auto; }
+.escudo { position: fixed; left: 50%; bottom: 0; z-index: 901; width: min(1180px, 100vw); height: 62vh; display: flex; flex-direction: column; transform: translate(-50%, 104%); transition: transform .42s var(--ease-ramp);
+  background: var(--papel); border: 1px solid var(--linha2); border-bottom: 0; border-radius: 18px 18px 0 0; box-shadow: 0 -18px 50px -16px rgba(0, 0, 0, .5); overflow: hidden; }
+.escudo.aberto { transform: translate(-50%, 0); }
+.escudo.arrastando { transition: none; user-select: none; }
+.esc-alca { display: grid; place-items: center; height: 18px; cursor: ns-resize; touch-action: none; flex-shrink: 0; }
+.esc-alca i { width: 52px; height: 5px; border-radius: 999px; background: var(--linha2); }
+.esc-alca:hover i { background: var(--tinta2); }
+.esc-topo { display: flex; align-items: center; gap: 12px; padding: 0 18px 10px; flex-shrink: 0; }
+.esc-topo h3 { margin: 0; display: flex; align-items: center; gap: 8px; font: 400 1.5rem var(--f-disp); letter-spacing: .03em; white-space: nowrap; cursor: ns-resize; touch-action: none; }
+.esc-escudo { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 9px; background: var(--tinta); font-size: 1rem; }
+.esc-busca { flex: 1; min-width: 0; max-width: 460px; margin-left: auto; min-height: 40px; }
+.esc-abas { display: flex; gap: 4px; padding: 0 14px; overflow-x: auto; scrollbar-width: none; border-bottom: 1px solid var(--linha2); flex-shrink: 0; }
+.esc-aba { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; padding: .55em .9em; border: 0; border-bottom: 3px solid transparent; background: none; color: var(--tinta2); font: 600 .95rem var(--f-ui); cursor: pointer; }
+.esc-aba:hover { color: var(--tinta); }
+.esc-aba.on { color: var(--verm); border-bottom-color: var(--verm); }
+.esc-corpo { flex: 1; overflow-y: auto; padding: 16px 18px 28px; overscroll-behavior: contain; }
+.esc-grade { columns: 3 300px; column-gap: 16px; }
+.esc-bloco { break-inside: avoid; margin: 0 0 16px; padding: 12px 14px; background: #fff; border: 1px solid var(--linha); border-radius: 12px; }
+.esc-bloco h4 { margin: 0 0 8px; font: 700 .76rem var(--f-ui); text-transform: uppercase; letter-spacing: .1em; color: var(--verm); }
+.esc-bloco dl { margin: 0; display: grid; gap: 8px; }
+.esc-it { display: grid; gap: 1px; }
+.esc-it dt, .esc-it b { font-weight: 700; color: var(--tinta); }
+.esc-it dd, .esc-it span { margin: 0; color: var(--tinta2); font-size: .94rem; line-height: 1.45; }
+.esc-col { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 10px; }
+.esc-col .esc-it { padding: 10px 12px; background: #fff; border: 1px solid var(--linha); border-radius: 10px; }
+.esc-col small { color: var(--mut); font-size: .78rem; margin-top: 3px; }
+.esc-vazio { text-align: center; color: var(--mut); padding: 30px 0; }
+body.escudo-on { overflow: hidden; }
+@media (max-width: 640px) { .esc-topo { flex-wrap: wrap; } .esc-busca { max-width: none; flex-basis: 100%; } .escudo { border-radius: 14px 14px 0 0; } }
+.ficha-cols > *, .col-a, .col-b, .clista, .cl-it, .cl-linha { min-width: 0; }
+.topo .topo-escudo[aria-expanded="true"] { background: var(--papel); color: var(--tinta); }
+.topo-escudo svg, .esc-escudo svg { width: 18px; height: 18px; }
+.esc-escudo { color: var(--papel); }
+.col-a, .col-b { grid-template-columns: minmax(0, 1fr); } .box-c > .clista { width: 100%; }
+
 </style>
 </head>
 <body data-view="carregando">
@@ -2175,6 +2290,8 @@ function render() {
   const ae = document.activeElement; const foco = ae && ae.id && app.contains(ae) ? { id: ae.id, s: ae.selectionStart, e: ae.selectionEnd } : null;
   const sc = $$('[data-scroll]', app).map(el => [el.dataset.scroll, el.scrollTop, el.scrollLeft]);
   const y = window.scrollY;
+  document.body.classList.toggle('em-camp', S.view === 'camp');
+  if (S.view !== 'camp' && S.escudo && S.escudo.aberto && typeof escudoAbrir === 'function') escudoAbrir(false);
   let html = '';
   if (S.view === 'carregando') html = viewCarregando();
   else if (S.view === 'login') html = viewLogin();
@@ -2410,7 +2527,7 @@ function topoBase(meio = '', esquerda = '') {
   return `<header class="topo">
     ${esquerda || `<div class="marca-p" aria-label="Wild Card"><b>WILD</b><span>CARD</span></div>`}
     <div class="topo-meio">${meio}</div>
-    <div class="topo-user"><span class="avatar" aria-hidden="true">${esc((S.user.nome || '?')[0].toUpperCase())}</span><span class="topo-nome">${esc(S.user.nome)}<small>${S.user.email ? esc(S.user.email) : '@' + esc(S.user.uname)}</small></span>
+    <div class="topo-user">${S.gm && S.camp && S.view === 'camp' ? `<button class="btn fant topo-escudo" data-a="escudo" aria-expanded="${!!(S.escudo && S.escudo.aberto)}" title="Escudo do Mestre: regras rápidas (Shift + E)">${typeof ICO_ESCUDO !== 'undefined' ? ICO_ESCUDO : ''}<span>Escudo</span></button>` : ''}<span class="avatar" aria-hidden="true">${esc((S.user.nome || '?')[0].toUpperCase())}</span><span class="topo-nome">${esc(S.user.nome)}<small>${S.user.email ? esc(S.user.email) : '@' + esc(S.user.uname)}</small></span>
       <button class="btn ico fant" data-a="sairConta" title="Sair da conta" aria-label="Sair da conta">${ICO.sair}</button></div>
   </header>`;
 }
@@ -3072,11 +3189,12 @@ A.clToggle = el => { const k = el.dataset.ck; S.clAberto.has(k) ? S.clAberto.del
 A.clTodos = el => {
   const f = fichaAtual(); if (!f) return; const src = S.edicao || f; const abrir = el.dataset.v === '1';
   ['vantagens', 'complicacoes', 'poderes'].forEach(ch => (src[ch] || []).forEach((it, i) => { const k = `${f.id}:${ch}:${i}:${it.nome}`; abrir ? S.clAberto.add(k) : S.clAberto.delete(k); }));
+  const r = racaDaFicha(src); if (r) { const k = `${f.id}:raca:${r.id || r.nome}`; abrir ? S.clAberto.add(k) : S.clAberto.delete(k); }
   render();
 };
 function seletorModoCartas() {
   const m = modoCartas();
-  return `<div class="modo-cartas" role="group" aria-label="Como mostrar vantagens, complicações e poderes">
+  return `<div class="modo-cartas" role="group" aria-label="Como mostrar raça, vantagens, complicações e poderes">
     <div class="seg mini"><button class="seg-b ${m === 'cartas' ? 'on' : ''}" data-a="modoCartas" data-v="cartas" aria-pressed="${m === 'cartas'}">🂠 Cartas</button><button class="seg-b ${m === 'lista' ? 'on' : ''}" data-a="modoCartas" data-v="lista" aria-pressed="${m === 'lista'}">☰ Lista</button></div>
     ${m === 'lista' ? `<button class="linkbtn" data-a="clTodos" data-v="1">expandir tudo</button><button class="linkbtn" data-a="clTodos" data-v="0">recolher tudo</button>` : ''}
   </div>`;
@@ -3354,7 +3472,7 @@ function viewFicha(f) {
   return `<div class="ficha ${ed ? 'editando' : ''}">${cabec}${barra}
     <div class="ficha-cols">
       <div class="col-a">${derivadas}${status}${atrs}${pers}${equip}</div>
-      <div class="col-b">${secaoRaca(f, src, ed)}${seletorModoCartas()}${secCartas('vantagens', 'Vantagens', 'Vantagem do livro')}${secCartas('complicacoes', 'Complicações', 'Complicação do livro')}${poderes}${evol}${notas}</div>
+      <div class="col-b">${seletorModoCartas()}${secaoRaca(f, src, ed)}${secCartas('vantagens', 'Vantagens', 'Vantagem do livro')}${secCartas('complicacoes', 'Complicações', 'Complicação do livro')}${poderes}${evol}${notas}</div>
     </div>
     ${ed ? `<div class="barra-salvar"><span>Mudanças ainda não salvas.</span><button class="btn fant" data-a="cancelarEdicao">Cancelar</button><button class="btn pri" data-a="salvarEdicao">Salvar edição</button></div>` : ''}
   </div>`;
@@ -3853,18 +3971,17 @@ function viewMestre() {
   const jogadores = (c.membros || []).filter(u => u !== c.mestre);
   const g = S.gmRol;
 
-  const topo = `<div class="gm-topo">
-    <section class="win cod-card"><div class="win-bar"><span class="win-tit">Código da campanha</span></div><div class="win-body">
+  const topo = `<section class="gm-cab">
+    <button class="gm-cab-capa" data-a="capaCamp" data-id="${c.id}" aria-label="Trocar e ajustar a capa">${quadro(c.capa, 'capa', `<span class="capa-vazia">${ICO.img}<span>Escolher capa</span></span>`)}<span class="ret-tag">Capa</span></button>
+    <div class="gm-cab-info">
+      <label class="gm-cab-nome"><span class="sr">Nome da campanha</span><input class="inp" id="gmNome" data-c="gmNome" value="${esc(c.nome)}" aria-label="Nome da campanha"></label>
+      <div class="membros"><span class="lbl">Na mesa · ${jogadores.length}</span>${jogadores.map(u => `<span class="chip">${esc(nomeDe(u))}</span>`).join('') || '<span class="dica">Ninguém entrou ainda. Mande o código para os jogadores.</span>'}</div>
+      <label class="campo linha gm-cab-xp"><span>XP por avanço</span><input class="inp curto" type="number" min="1" max="50" id="gmXp" data-c="gmXp" value="${c.xpPorAvanco || 5}"></label>
+    </div>
+    <div class="gm-cab-cod"><span class="lbl">Código da mesa</span>
       <button class="codigo-grande mono" data-a="copiarCodigo" title="Copiar código" aria-label="Copiar código ${esc(c.codigo)}">${esc(c.codigo)}<span>${ICO.copiar}</span></button>
-      <p class="dica">Os jogadores usam este código em “Entrar em Campanha”.</p>
-      <div class="membros"><span class="lbl">Na mesa (${jogadores.length})</span>${jogadores.map(u => `<span class="chip">${esc(nomeDe(u))}</span>`).join('') || '<span class="dica">Ninguém entrou ainda.</span>'}</div>
-    </div></section>
-    <section class="win capa-card"><div class="win-bar"><span class="win-tit">Capa</span></div><div class="win-body">
-      <button class="capa-pick" data-a="capaCamp" data-id="${c.id}" aria-label="Trocar e ajustar a capa">${quadro(c.capa, 'capa', `<span class="capa-vazia">${ICO.img} Escolher capa 16:9</span>`)}<span class="ret-tag">Ajustar</span></button>
-      <div class="linha-cfg"><label class="campo linha"><span>Nome</span><input class="inp" id="gmNome" data-c="gmNome" value="${esc(c.nome)}"></label>
-      <label class="campo linha"><span>XP por avanço</span><input class="inp curto" type="number" min="1" max="50" id="gmXp" data-c="gmXp" value="${c.xpPorAvanco || 5}"></label></div>
-    </div></section>
-  </div>`;
+      <small class="dica">Os jogadores usam em “Entrar em campanha”.</small></div>
+  </section>`;
 
   const rolagem = `<details class="box" data-k="gm.rol" ${aberto('gm.rol', true)}><summary class="box-h"><span>Rolagem</span><span class="box-res mono">${g.qtd}d${g.lados}</span></summary><div class="box-c">
     <div class="rol-gm">
@@ -3886,14 +4003,25 @@ function viewMestre() {
   const pcs = S.fichas.slice().sort((a, b) => (a.nome || '').localeCompare(b.nome || ''));
   const fichas = `<details class="box" data-k="gm.fichas" ${aberto('gm.fichas', true)}><summary class="box-h"><span>Fichas dos jogadores</span><span class="box-res">${pcs.length}</span></summary><div class="box-c">
     <div class="add-linha"><label class="campo linha"><span>Criar para</span><select class="inp" id="gmDonoNova"><option value="-">Sem dono (guardar)</option>${jogadores.map(u => `<option value="${esc(u)}">${esc(nomeDe(u))}</option>`).join('')}<option value="${esc(S.user.uname)}">Eu (mestre)</option></select></label><button class="btn pri sm" data-a="gmCriarFicha">${ICO.mais} Criar ficha de jogador</button></div>
-    <div class="lista-fichas">${pcs.map(f0 => {
+    <div class="pc-grade">${pcs.map(f0 => {
     const f = normFicha(f0); const d = deriv(f);
-    return `<div class="lf">
-        <button class="lf-abrir" data-a="gmAbrirFicha" data-id="${f.id}">${quadro(f.retrato, 'retrato mini', `<span class="ret-vazio">${esc((f.nome || '?')[0])}</span>`)}<span><b>${esc(f.nome || 'Sem nome')}</b><small>${esc(f.conceito || '')} · ${d.posto} · XP ${f.xp || 0}${d.avDisp ? ` · <span class="txt-quente">${d.avDisp} avanço(s)</span>` : ''}</small></span></button>
-        <span class="lf-stats mono">APA ${d.aparar} · RES ${d.res} · ★${f.bennies}${f.feridas ? ` · <span class="txt-perigo">${f.feridas}F</span>` : ''}</span>
-        <label class="lf-dono"><span class="sr">Jogador</span><select class="inp" data-c="gmDono" data-id="${f.id}" aria-label="Jogador de ${esc(f.nome)}"><option value="-" ${!f.dono ? 'selected' : ''}>Sem dono</option>${[...jogadores, S.user.uname].map(u => `<option value="${esc(u)}" ${f.dono === u ? 'selected' : ''}>${esc(u === S.user.uname ? 'Mestre' : nomeDe(u))}</option>`).join('')}</select></label>
-        <button class="btn ico fant perigo-txt" data-a="gmExcluirFicha" data-id="${f.id}" aria-label="Excluir ficha de ${esc(f.nome)}" title="Excluir">${ICO.lixo}</button>
-      </div>`;
+    return `<article class="pcc ${f.feridas ? 'ferido' : ''}">
+        <button class="pcc-abrir" data-a="gmAbrirFicha" data-id="${f.id}" title="Abrir a ficha de ${esc(f.nome || 'Sem nome')}">
+          ${quadro(f.retrato, 'retrato pcc-ret', `<span class="ret-vazio">${esc((f.nome || '?')[0])}</span>`)}
+          <span class="pcc-txt"><b>${esc(f.nome || 'Sem nome')}</b>${f.conceito ? `<span class="pcc-conc">${esc(f.conceito)}</span>` : '<span class="pcc-conc vazio-t">Sem conceito</span>'}</span>
+        </button>
+        <div class="pcc-chips">
+          <span class="chip">${d.posto}</span>
+          <span class="chip mono" title="Aparar">🛡 ${d.aparar}</span><span class="chip mono" title="Resistência${d.arm ? ` (${d.arm} de armadura)` : ''}">⛨ ${d.res}${d.arm ? `(${d.arm})` : ''}</span>
+          <span class="chip mono" title="Benes">★ ${f.bennies}</span>
+          ${f.feridas ? `<span class="chip perigo" title="Ferimentos">${f.feridas} ferim.</span>` : ''}${f.abalado ? '<span class="chip perigo">Abalado</span>' : ''}
+          ${d.avDisp ? `<span class="chip quente">${d.avDisp} avanço${d.avDisp > 1 ? 's' : ''}</span>` : ''}
+        </div>
+        <div class="pcc-pe">
+          <label class="pcc-dono"><span class="lbl">Jogador</span><select class="inp" data-c="gmDono" data-id="${f.id}" aria-label="Jogador de ${esc(f.nome)}"><option value="-" ${!f.dono ? 'selected' : ''}>Sem dono</option>${[...jogadores, S.user.uname].map(u => `<option value="${esc(u)}" ${f.dono === u ? 'selected' : ''}>${esc(u === S.user.uname ? 'Mestre' : nomeDe(u))}</option>`).join('')}</select></label>
+          <button class="btn ico fant perigo-txt" data-a="gmExcluirFicha" data-id="${f.id}" aria-label="Excluir ficha de ${esc(f.nome)}" title="Excluir ficha">${ICO.lixo}</button>
+        </div>
+      </article>`;
   }).join('') || '<p class="vazio">Nenhuma ficha ainda.</p>'}</div>
   </div></details>`;
 
@@ -3925,7 +4053,7 @@ function viewMestre() {
     <button class="btn quente" data-a="iniciarSessao">Iniciar sessão</button></div>
     <p class="dica">Iniciar sessão dá ao mestre 1 Bene por jogador (${jog}), devolve aos personagens os Benes de início de sessão (com Sorte, Má Sorte e afins) e dá 2 Benes a cada NPC Carta Selvagem.</p>
   </div></details>`;
-  return `<h2 class="tit-sec sr">Área do Mestre</h2>${topo}<div class="gm-cols"><div>${sessao}${rolagem}${recBox}</div><div>${fichas}${npcBox}${boxRacas()}</div></div>`;
+  return `<h2 class="tit-sec sr">Área do Mestre</h2>${topo}<div class="gm-cols"><div class="gm-lado">${sessao}${rolagem}${recBox}</div><div class="gm-main">${fichas}${npcBox}${boxRacas()}</div></div>`;
 }
 
 A.copiarCodigo = async () => {
@@ -4266,9 +4394,23 @@ function secaoRaca(f, src, ed) {
   return `<details class="box" data-k="f.raca" ${aberto('f.raca', true)}><summary class="box-h"><span>Raça</span><span class="box-res">${esc(src.raca || '—')}</span></summary><div class="box-c">
     ${ed ? `<div class="add-linha"><select class="inp" id="edRacaSel" aria-label="Raça"><option value="">Sem raça definida</option>${opts.map(x => `<option value="${x.id}" ${src.racaId === x.id || (!src.racaId && src.raca === x.nome) ? 'selected' : ''}>${esc(x.nome)}</option>`).join('')}</select><button class="btn sm sec" data-a="edAplicarRaca">Aplicar raça</button></div>
       <p class="dica">Aplicar troca as habilidades raciais da ficha: cartas de vantagem e complicação raciais, poderes inatos e armas naturais. Atributos e perícias não mudam.</p>` : ''}
-    ${r ? `<div class="raca-ficha"><button class="carta-btn" data-a="verRaca" aria-label="Ampliar raça">${cartaHtml(carta, { mini: true })}</button>
+    ${r && modoCartas() === 'lista' ? racaLista(f, r) : r ? `<div class="raca-ficha"><button class="carta-btn" data-a="verRaca" aria-label="Ampliar raça">${cartaHtml(carta, { mini: true })}</button>
       <ul class="raca-habs-lista">${(r.habs || []).map(h => `<li><b>${esc(habRot(h))}</b><small>${esc((HAB_RACIAIS[h.k] || {}).desc || '')}</small></li>`).join('')}</ul></div>` : '<p class="vazio">Sem habilidades raciais.</p>'}
   </div></details>`;
+}
+function racaLista(f, r) {
+  const ck = `${f.id}:raca:${r.id || r.nome}`; const ab = S.clAberto.has(ck); const habs = r.habs || [];
+  const resumo = habs.map(h => habRot(h)).join(' · ');
+  return `<ul class="clista"><li class="cl-it c-raca ${ab ? 'aberto' : ''}" style="--cc:#1d1b18">
+    <div class="cl-linha">
+      <button class="cl-cab" data-a="clToggle" data-ck="${esc(ck)}" aria-expanded="${ab}" title="${ab ? 'Recolher' : 'Ver as habilidades raciais'}">
+        <span class="cl-sig" aria-hidden="true">♣</span><span class="cl-nome">${esc(r.nome)}</span><span class="cl-selo">Raça</span>
+        ${ab ? '' : `<span class="cl-resumo">${esc(resumo || 'Sem habilidades raciais')}</span>`}<span class="cl-seta" aria-hidden="true">▾</span>
+      </button>
+      <span class="cl-acoes"><button class="btn olho ico sm" data-a="verRaca" title="Ver como carta" aria-label="Ver ${esc(r.nome)} como carta">${ICO.olho}</button></span>
+    </div>
+    ${ab ? `<div class="cl-corpo">${r.desc ? `<p class="cl-desc">${esc(r.desc)}</p>` : ''}<ul class="raca-lista-hab">${habs.map(h => `<li><b>${esc(habRot(h))}</b><small>${esc((HAB_RACIAIS[h.k] || {}).desc || '')}</small></li>`).join('') || '<li class="vazio">Sem habilidades raciais.</li>'}</ul></div>` : ''}
+  </li></ul>`;
 }
 A.verRaca = () => { const f = fichaAtual(); if (!f) return; const r = racaDaFicha(S.edicao || f); if (r) abrirCartaGrande(cartaRaca(r), f.nome); };
 A.edAplicarRaca = () => {
@@ -5859,6 +6001,210 @@ A.galApresentar = () => {
   $('#apOk').onclick = async () => { const lista = sel.map(k => imgs.find(i => i.id === k)).map(i => ({ ref: i.ref, legenda: i.legenda || '' })); await publicarNaMesa({ tipo: 'apresentacao', imagens: lista }); fecharModal(); toast('Apresentação enviada à mesa.'); };
   des();
 };
+
+</script>
+<script>
+/* =====================================================================
+   ESCUDO DO MESTRE — gaveta que sobe por cima da tela, sem trocar de aba.
+   Consulta rápida: combate, dano, Benes, condições, superpoderes,
+   testes e ferramentas, ambiente. Busca filtra tudo de uma vez.
+   ===================================================================== */
+'use strict';
+const ICO_ESCUDO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.4 8.2-8 9-4.6-.8-8-4.5-8-9V6z"/><path d="M12 8v8M8.5 11.5h7"/></svg>';
+
+const ESCUDO = [
+  { id: 'combate', nome: 'Combate', ico: '⚔', blocos: [
+    { t: 'Rodada', itens: [
+      ['Cartas de ação', 'Todos recebem uma carta; age do Ás ao 2. Empate: espadas › copas › ouros › paus.'],
+      ['Curinga', 'Age quando quiser na rodada, +2 em testes e dano. Todos os heróis ganham 1 Bene. Embaralha no fim da rodada.'],
+      ['Ações', 'Mover + 1 ação sem penalidade. Até 3 ações: −2 em todas por ação extra (−2 com 2, −4 com 3).'],
+      ['Movimento', 'Movimentação 6 quadros. Correr: +dado de corrida (d6), −2 nas ações do turno. Terreno difícil custa 2 por quadro.'],
+      ['Em espera', 'Guarda a ação; pode interromper alguém com teste resistido de Atletismo (ou Agilidade).'],
+    ] },
+    { t: 'Atacar', itens: [
+      ['Corpo a corpo', 'Lutar contra o Aparar do alvo.'],
+      ['À distância', 'Atirar (ou Atletismo para arremessar) contra 4. Curta 0 · Média −2 · Longa −4 · Extrema −8.'],
+      ['Ampliação', 'Acertar com 4+ acima do alvo: +d6 no dano.'],
+      ['Agrupar', '+1 por aliado adjacente ao alvo (além do primeiro), máx. +4. Aliados do alvo adjacentes anulam 1 cada.'],
+      ['Ataque Selvagem', '+2 no ataque e no dano corpo a corpo; o atacante fica Vulnerável.'],
+      ['Mirar', 'Gasta o turno: +2 no próximo ataque à distância (ou ignora 2 de penalidade).'],
+      ['Cobertura', 'Leve −2 · Média −4 · Pesada −6 · Quase total −8.'],
+      ['Finalização', 'Alvo indefeso, amarrado ou surpreso: +4 no ataque e no dano.'],
+      ['Alvo Vulnerável', '+2 nas ações contra ele (inclui Atordoado).'],
+      ['Defender', 'Usa o turno inteiro: Aparar +4 até o próximo turno.'],
+      ['Arma na mão inábil', '−2 (Ambidestro ignora).'],
+      ['Desengajar', 'Sair do corpo a corpo dá ao adversário um ataque livre, a menos que use Recuar (só move).'],
+    ] },
+    { t: 'Manobras', itens: [
+      ['Truque', 'Teste de perícia (Provocar, Atletismo, Persuadir…) contra Astúcia ou Agilidade do alvo. Sucesso: Distraído ou Vulnerável. Ampliação: também Abalado.'],
+      ['Teste de Vontade', 'Intimidar contra Espírito, Provocar contra Astúcia. Mesmo efeito do Truque.'],
+      ['Agarrar', 'Atletismo resistido. Sucesso: Enredado; ampliação: Preso. Quem prende alguém fica Vulnerável. Agrupar vale.'],
+      ['Desarmar', 'Ataque com −2 contra a arma; o alvo testa Força contra o dano ou solta.'],
+      ['Ataque em área', 'Modelos Pequeno (raio 1), Médio (2), Grande (3) e Cone. Quem está dentro sofre o dano; errou: o ataque desvia.'],
+    ] },
+  ] },
+  { id: 'dano', nome: 'Dano e ferimentos', ico: '✚', blocos: [
+    { t: 'Resolver o dano', itens: [
+      ['Dano ≥ Resistência', 'Abalado.'],
+      ['Cada 4 acima', '+1 Ferimento (e Abalado). Abalado de novo sem ferir: vira 1 Ferimento.'],
+      ['Penalidade', '−1 por Ferimento em todos os testes, máx. −3. Extras saem com 1 Ferimento.'],
+      ['PA (penetração)', 'Reduz a armadura do alvo nesse valor.'],
+      ['Arma pesada', 'Só ela fere alvos com armadura pesada (veículos, robôs grandes).'],
+    ] },
+    { t: 'Abalado e Absorver', itens: [
+      ['Sair de Abalado', 'No início do turno: Espírito. Sucesso: sai e age normalmente. Ou gasta 1 Bene a qualquer momento.'],
+      ['Absorver', 'Ao receber Ferimentos, gaste 1 Bene e role Vigor: sucesso tira 1 Ferimento, cada ampliação mais 1. Tirou todos: também sai de Abalado.'],
+    ] },
+    { t: 'Incapacitado', itens: [
+      ['Na hora', 'Teste de Vigor. Falha crítica: morre. Falha: Lesão permanente e Sangrando. Sucesso: Lesão até curar os Ferimentos. Ampliação: Lesão some em 24 h.'],
+      ['Sangrando', 'Vigor no início do turno. Falha: morre. Ampliação: estabiliza. Curar (uma ação) também estabiliza.'],
+      ['Supers (Compêndio)', 'Quem morreria fica Derrotado e tira uma carta na tabela de Derrota (2 morte trágica · 3–5 marcado · 6–10 Exausto · J/Q Fatigado · K levanta · Ás estabiliza · Curinga volta transformado).'],
+    ] },
+    { t: 'Curar', itens: [
+      ['Hora de ouro', 'Curar até 1 hora depois: cada sucesso e ampliação tira 1 Ferimento (−1 por Ferimento do paciente).'],
+      ['Cura natural', 'Vigor a cada 5 dias: sucesso tira 1 Ferimento, ampliação 2.'],
+      ['Queda', '1d6 + 1 a cada 2 quadros, até 10d6+10.'],
+    ] },
+  ] },
+  { id: 'benes', nome: 'Benes', ico: '★', blocos: [
+    { t: 'Quem tem', itens: [
+      ['Jogadores', '3 no início de cada sessão (mais Sorte, menos Má Sorte). Não acumulam entre sessões.'],
+      ['Mestre', '1 por jogador no início da sessão, para qualquer personagem seu. Cada Carta Selvagem do mestre tem 2 próprios.'],
+      ['Curinga', 'Saiu um Curinga no combate: todos os heróis ganham 1 Bene.'],
+      ['Recompensa', 'Boa interpretação, Complicação em jogo, tirada que fez a mesa rir, momento heroico, Interlúdio contado.'],
+    ] },
+    { t: 'Para que serve', itens: [
+      ['Rerrolar teste', 'Rola de novo e fica com o melhor total. Falha crítica não pode ser rerrolada.'],
+      ['Sair de Abalado', 'Instantâneo, a qualquer momento, até interrompendo.'],
+      ['Absorver', 'Rolagem de Vigor para evitar Ferimentos.'],
+      ['Nova carta de ação', 'Depois que todos sacaram; pode repetir e escolher entre as cartas.'],
+      ['Rerrolar dano', 'Inclui o d6 da ampliação.'],
+      ['Recuperar PP', '+5 Pontos de Poder (poderes do livro básico).'],
+      ['Influenciar a história', 'A critério do mestre: uma pista, um item comum, um PNJ mais receptivo.'],
+    ] },
+  ] },
+  { id: 'condicoes', nome: 'Condições', ico: '◎', blocos: [] },
+  { id: 'poderes', nome: 'Superpoderes', ico: '✦', blocos: [
+    { t: 'Compêndio de Superpoderes', itens: [
+      ['Como funcionam', 'Poderes comprados com pontos na criação e sempre ligados. Não se gasta PP nem se rola perícia arcana para ativar.'],
+      ['Atacar com poder', 'Atirar (distância), Lutar (corpo a corpo) ou Atletismo (arremesso). Ampliação +d6 como qualquer arma.'],
+      ['Níveis', 'Pulp 15 · Lutadores de Rua 30 · Quatro Cores 45 · Pesos Pesados 60 · Cósmicos 75 pontos.'],
+      ['Limite de Poder', 'Nenhum poder acima de 1/3 dos pontos (10 em Lutadores de Rua). O Maioral Chegou: metade, em um poder.'],
+      ['Super Karma', 'Uma Complicação Maior extra vale +5 pontos (+10 em Quatro Cores ou acima). Não aumenta o Limite.'],
+      ['Modificadores', 'Positivos encarecem e dão opções; negativos barateiam (Dispositivo −1/−2, Necessita Ativação −1, Limitação, Contingente, Lento). Mínimo 1 ponto.'],
+      ['Evolução', 'Progressos melhoram atributos, perícias e Vantagens. Novo Poder e Pontos de Poder só com Estrelas Ascendentes.'],
+    ] },
+    { t: 'Combate de quadrinhos', itens: [
+      ['Ataques Combinados', 'O líder gasta 1 Bene; todos agem na carta do mais lento. Cada aliado que acerta soma +1 de dano por nível do poder (+2 com ampliação).'],
+      ['Sinergia', 'Dois poderes que combinam no mesmo turno: +2 no segundo (ou −2 se atrapalham).'],
+      ['Projeção', '20+ de dano de superpoder num alvo de tamanho normal: arremessa 2d6 quadros. Bateu em algo: 1d6 a cada 2 quadros.'],
+      ['Imunidades', 'Cartas Selvagens com superpoderes são imunes a Golpe de Misericórdia. Defensor Desarmado não vale.'],
+    ] },
+    { t: 'Poderes do livro básico', itens: [
+      ['Ativar', 'Ação: rolar a perícia arcana. Sucesso ativa; ampliação melhora o efeito. Gasta os PP do poder.'],
+      ['Falha', 'O poder não funciona e gasta 1 PP.'],
+      ['Recarga', '5 PP por hora de descanso, ou 5 PP por Bene.'],
+      ['Manter', 'Poderes com duração podem ser mantidos (custo por rodada); cada poder mantido dá −1 em novas ativações.'],
+    ] },
+  ] },
+  { id: 'testes', nome: 'Testes e ferramentas', ico: '🎲', blocos: [
+    { t: 'Testes', itens: [
+      ['Dificuldade', '4. Cada 4 acima é uma ampliação.'],
+      ['Dado Selvagem', 'Cartas Selvagens rolam d6 junto e ficam com o maior. Dados explodem no máximo.'],
+      ['Falha crítica', '1 no dado da característica e 1 no Dado Selvagem. Não pode ser rerrolada.'],
+      ['Sem treino', 'd4 −2 na perícia que o personagem não tem.'],
+      ['Resistido', 'Os dois rolam; maior vence. Empate fica com quem resiste.'],
+      ['Suporte', 'Aliado testa a perícia: +1 (sucesso) ou +2 (ampliação), máx. +4 somando todos.'],
+      ['Medo', 'Espírito (ação livre) ao ver a ameaça. Cena grotesca: falha deixa Abalado e Fatigado. Criatura terrível: falha rola na Tabela de Medo. Em supers, use pouco.'],
+    ] },
+    { t: 'Ferramentas do mestre', itens: [
+      ['Tarefa Dramática', '4 fichas por herói em 3–5 rodadas. Sucesso 1 ficha, ampliação +1. Carta de Paus: complicação (−2, falha = algo dá errado).'],
+      ['Encontro Rápido', 'Cada herói 1 teste. Falha: 1 Ferimento (pode Absorver). Sucesso: contribui. Ampliação: ganha algo extra.'],
+      ['Conflito Social', '3 rodadas de argumento (+2/−2 pela interpretação). Sucesso 1 ficha, ampliação 2. Total decide o resultado.'],
+      ['Perseguição', 'Teste de manobra por rodada; sucesso dá 1 Carta de Perseguição, ampliação +1. Paus: complicação. Cerca de 5 rodadas.'],
+      ['Interlúdio', 'Puxe uma carta: ♠ vitória · ♥ afeto · ♦ desejo · ♣ tragédia. Quem conta ganha 1 Bene.'],
+    ] },
+  ] },
+  { id: 'ambiente', nome: 'Ambiente', ico: '☁', blocos: [
+    { t: 'Luz', itens: [
+      ['Penumbra', '−2 em ataques e Perceber (Visão no Escuro ignora).'],
+      ['Escuridão', '−4; alvos a mais de 10 quadros não são vistos.'],
+      ['Breu', '−6; só se ataca o que se ouve ou se sabe onde está.'],
+    ] },
+    { t: 'Perigos', itens: [
+      ['Fogo', 'Alvo inflamável pega fogo com 6 no d6 (4–6 muito inflamável). Queima no início do turno; d6: 6 aumenta, 1 diminui.'],
+      ['Frio e calor', 'Vigor a cada 4 horas em clima extremo (−2 a cada 5 °C além do limite, máx. −4); falha dá Fadiga.'],
+      ['Fôlego', 'Segura a respiração por 2 + dado de Vigor rodadas (metade se pego de surpresa). Nadar em perigo: Atletismo.'],
+      ['Veneno', 'Vigor; o efeito depende do veneno (Fadiga, Paralisia, Ferimento).'],
+      ['Queda', '1d6 + 1 a cada 2 quadros (máx. 10d6+10). Água funda: Atletismo corta pela metade.'],
+    ] },
+  ] },
+];
+
+S.escudo = { aberto: false, aba: 'combate', busca: '', alt: lsGet('wc.escudoAlt', 62) };
+function escudoBlocos(aba) {
+  if (aba.id !== 'condicoes') return aba.blocos;
+  return [{ t: 'Condições do Savage', itens: Object.values(CONDICOES).map(c => [`${c.ico} ${c.nome}`, c.desc]) }];
+}
+function escudoHtml() {
+  const E = S.escudo; const q = normTxt(E.busca);
+  const abas = ESCUDO.map(a => ({ ...a, blocos: escudoBlocos(a) }));
+  let corpo;
+  if (q) {
+    const achados = [];
+    abas.forEach(a => a.blocos.forEach(b => b.itens.forEach(([k, v]) => { if (normTxt(k + ' ' + v + ' ' + b.t).includes(q)) achados.push([a, b.t, k, v]); })));
+    corpo = achados.length ? `<div class="esc-col">${achados.map(([a, bt, k, v]) => `<div class="esc-it"><b>${esc(k)}</b><span>${esc(v)}</span><small>${a.ico} ${esc(a.nome)} › ${esc(bt)}</small></div>`).join('')}</div>`
+      : `<p class="esc-vazio">Nada encontrado para “${esc(E.busca)}”.</p>`;
+  } else {
+    const a = abas.find(x => x.id === E.aba) || abas[0];
+    corpo = `<div class="esc-grade">${a.blocos.map(b => `<section class="esc-bloco"><h4>${esc(b.t)}</h4><dl>${b.itens.map(([k, v]) => `<div class="esc-it"><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join('')}</dl></section>`).join('')}</div>`;
+  }
+  return `<div class="esc-alca" data-esc="alca" title="Arraste para ajustar a altura" aria-hidden="true"><i></i></div>
+    <header class="esc-topo">
+      <h3><span class="esc-escudo" aria-hidden="true">${ICO_ESCUDO}</span>Escudo do Mestre</h3>
+      <input class="inp esc-busca" type="search" placeholder="Buscar regra (ex.: agrupar, sangrando, sinergia)" value="${esc(E.busca)}" data-esc="busca" aria-label="Buscar no escudo">
+      <button class="btn ico fant" data-esc="fechar" aria-label="Fechar o escudo" title="Fechar (Esc)">${ICO.x}</button>
+    </header>
+    <nav class="esc-abas" role="tablist">${abas.map(a => `<button role="tab" class="esc-aba ${!q && a.id === E.aba ? 'on' : ''}" aria-selected="${!q && a.id === E.aba}" data-esc="aba" data-v="${a.id}"><span aria-hidden="true">${a.ico}</span>${esc(a.nome)}</button>`).join('')}</nav>
+    <div class="esc-corpo">${corpo}</div>`;
+}
+function escudoEl() {
+  let el = $('#escudo');
+  if (!el) {
+    el = document.createElement('aside'); el.id = 'escudo'; el.className = 'escudo'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-label', 'Escudo do Mestre');
+    const fundo = document.createElement('div'); fundo.id = 'escudoFundo'; fundo.className = 'escudo-fundo'; fundo.addEventListener('click', () => escudoAbrir(false));
+    document.body.append(fundo, el);
+    el.addEventListener('click', ev => {
+      const b = ev.target.closest('[data-esc]'); if (!b) return;
+      if (b.dataset.esc === 'fechar') escudoAbrir(false);
+      else if (b.dataset.esc === 'aba') { S.escudo.aba = b.dataset.v; S.escudo.busca = ''; escudoDesenhar(); }
+    });
+    el.addEventListener('input', ev => { if (ev.target.dataset.esc === 'busca') { S.escudo.busca = ev.target.value; const pos = ev.target.selectionStart; escudoDesenhar(); const i = $('.esc-busca', el); i.focus(); i.setSelectionRange(pos, pos); } });
+    /* alça: puxar para cima ou para baixo muda a altura; puxar bem para baixo fecha */
+    el.addEventListener('pointerdown', ev => {
+      if (!ev.target.closest('[data-esc="alca"], .esc-topo h3')) return;
+      ev.preventDefault(); const y0 = ev.clientY, h0 = S.escudo.alt; el.classList.add('arrastando');
+      const mv = e => { S.escudo.alt = clamp(h0 + (y0 - e.clientY) / window.innerHeight * 100, 12, 94); el.style.height = S.escudo.alt + 'vh'; };
+      const up = () => { window.removeEventListener('pointermove', mv); window.removeEventListener('pointerup', up); el.classList.remove('arrastando');
+        if (S.escudo.alt < 25) { S.escudo.alt = 62; escudoAbrir(false); } else lsSet('wc.escudoAlt', Math.round(S.escudo.alt)); el.style.height = S.escudo.alt + 'vh'; };
+      window.addEventListener('pointermove', mv); window.addEventListener('pointerup', up);
+    });
+  }
+  return el;
+}
+function escudoDesenhar() { const el = escudoEl(); el.innerHTML = escudoHtml(); el.style.height = S.escudo.alt + 'vh'; }
+function escudoAbrir(abrir = !S.escudo.aberto) {
+  S.escudo.aberto = abrir; const el = escudoEl(); if (abrir) escudoDesenhar();
+  requestAnimationFrame(() => { el.classList.toggle('aberto', abrir); $('#escudoFundo').classList.toggle('on', abrir); document.body.classList.toggle('escudo-on', abrir); });
+  $$('[data-a="escudo"]').forEach(b => b.setAttribute('aria-expanded', abrir));
+  if (abrir) setTimeout(() => { const i = $('.esc-busca', el); if (i && window.matchMedia('(pointer: fine)').matches) i.focus({ preventScroll: true }); }, 250);
+}
+A.escudo = () => escudoAbrir();
+window.addEventListener('keydown', ev => {
+  if (ev.key === 'Escape' && S.escudo.aberto) { escudoAbrir(false); ev.stopPropagation(); return; }
+  /* atalho: Shift + E abre e fecha (fora de campos de texto) */
+  if (ev.key === 'E' && ev.shiftKey && !ev.ctrlKey && !ev.metaKey && !ev.target.closest('input, textarea, select, [contenteditable]') && S.gm && S.camp) { ev.preventDefault(); escudoAbrir(); }
+}, true);
 
 </script>
 </body>
